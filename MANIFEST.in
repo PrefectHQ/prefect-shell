@@ -1,0 +1,2 @@
+include versioneer.py
+include prefect_shell/_version.py
