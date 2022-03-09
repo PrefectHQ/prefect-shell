@@ -1,3 +1,6 @@
+import logging
+import os
+
 import pytest
 from prefect import flow
 
@@ -19,6 +22,27 @@ def test_shell_run_command():
         return shell_run_command(command="echo work!")
 
     assert test_flow().result().result() == "work!"
+
+
+def test_shell_run_command_stream_level(caplog):
+    @flow
+    def test_flow():
+        return shell_run_command(
+            command="echo work!",
+            stream_level=logging.WARNING,
+        )
+
+    test_flow()
+    for record in caplog.records:
+        assert record.levelname == "DEBUG"
+
+
+def test_shell_run_command_helper_command():
+    @flow
+    def test_flow():
+        return shell_run_command(command="pwd", helper_command="cd $HOME")
+
+    assert test_flow().result().result() == os.path.expandvars("$HOME")
 
 
 def test_shell_run_command_return_all():
