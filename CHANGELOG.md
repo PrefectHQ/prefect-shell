@@ -21,9 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.1.0
 
-Released on ????? ?th, 20??.
+Released on March 9th, 2022.
 
 ### Added
 
-- `task_name` task - [#1](https://github.com/PrefectHQ/prefect_shell/pull/1)
+- `shell_run_command` task and utility - [#1](https://github.com/PrefectHQ/prefect_shell/pull/1)
 
