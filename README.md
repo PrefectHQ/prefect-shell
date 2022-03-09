@@ -26,18 +26,13 @@ pip install prefect-shell
 
 ```python
 from prefect import flow
-from prefect_shell.tasks import (
-    goodbye_prefect_shell,
-    hello_prefect_shell,
-)
-
+from prefect_shell import shell_run_command
 
 @flow
-def example_flow():
-    hello_prefect_shell
-    goodbye_prefect_shell
+def example_shell_run_command_flow():
+    return shell_run_command(command="ls .", return_all=True)
 
-example_flow()
+example_shell_run_command_flow()
 ```
 
 ## Resources

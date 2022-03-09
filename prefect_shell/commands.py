@@ -54,8 +54,16 @@ def shell_run_command(
           successfully be converted to a numeric value by logging.getLevelName().
 
     Example:
+        List contents in the current directory.
         ```python
         from prefect import flow
+        from prefect_shell import shell_run_command
+
+        @flow
+        def example_shell_run_command_flow():
+            return shell_run_command(command="ls .", return_all=True)
+
+        example_shell_run_command_flow()
         ```
     """
     logger = get_run_logger()
