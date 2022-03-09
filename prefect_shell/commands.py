@@ -30,10 +30,11 @@ async def shell_run_command(
             will be executed prior to the `command` in the same process.
             Can be used to change directories, define helper functions, etc.
             for different commands in a flow.
-        shell: Shell to run the command with; defaults to "bash".
+        shell: Shell to run the command with.
         return_all: Whether this task should return all lines of stdout as a list,
-            or just the last line as a string; defaults to `False`.
-        stream_level: The logging level of the stream.
+            or just the last line as a string.
+        stream_level: The logging level of the stream;
+            defaults to 20 equivalent to `logging.INFO`.
 
     Returns:
         If return all, returns all lines as a list; else the last line as a string.

@@ -26,6 +26,7 @@ plugins:
             show_root_heading: True
             show_object_full_path: False
             show_category_heading: False
+            show_signature: False
             show_bases: False
             heading_level: 1
       watch:
@@ -35,4 +36,5 @@ plugins:
 nav:
     - Home: index.md
     - Commands: commands.md
+    - Utils: utils.md
 
