@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- If no logger is provided, actually get a Prefect run logger - [#18](https://github.com/PrefectHQ/prefect_shell/pull/18)
+- If no logger is provided, actually get a generic logger - [#18](https://github.com/PrefectHQ/prefect_shell/pull/18)
 
 ### Security
 
