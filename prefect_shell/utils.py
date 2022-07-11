@@ -81,7 +81,6 @@ async def shell_run_command(
                 msg = (
                     f"Command failed with exit code {process.returncode}:\n" f"{stderr}"
                 )
-                logger.error(msg)
                 raise RuntimeError(msg)
 
     return lines if return_all else lines[-1]
