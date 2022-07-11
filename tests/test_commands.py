@@ -12,7 +12,7 @@ def test_shell_run_command_error():
     def test_flow():
         return shell_run_command(command="ls this/is/invalid")
 
-    match = "ls: this/is/invalid: No such file or directory"
+    match = "this/is/invalid': No such file or directory\n"
     with pytest.raises(RuntimeError, match=match):
         test_flow().result(raise_on_failure=True)
 
