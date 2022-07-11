@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 ### Removed
+- Removed `utils.run_shell_command`; can be accessed using `commands.run_shell_command.fn` - [#19](//github.com/PrefectHQ/prefect_shell/pull/19)
 
 ### Fixed
 
