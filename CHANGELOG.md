@@ -10,12 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Improve error visibility on failure - [#17](//github.com/PrefectHQ/prefect_shell/pull/17)
+- Improve error visibility on failure - [#17](https://github.com/PrefectHQ/prefect_shell/pull/17)
 
 ### Deprecated
 
 ### Removed
-- Removed `utils.run_shell_command`; can be accessed using `commands.run_shell_command.fn` - [#19](//github.com/PrefectHQ/prefect_shell/pull/19)
+- Removed `utils.run_shell_command`; can be accessed using `commands.run_shell_command.fn` - [#19](https://github.com/PrefectHQ/prefect_shell/pull/19)
 
 ### Fixed
 
