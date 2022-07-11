@@ -4,7 +4,6 @@ import logging
 import os
 import sys
 import tempfile
-from multiprocessing import get_logger
 from typing import List, Optional, Union
 
 from anyio import open_process
@@ -37,7 +36,7 @@ async def shell_run_command(
             or just the last line as a string; defaults to `False`.
         stream_level: The logging level of the stream.
         logger: Can pass a desired logger; if not passed, will automatically
-            get a logger from Prefect.
+            gets a run logger from Prefect.
 
     Returns:
         If return all, returns all lines as a list; else the last line as a string.
@@ -49,7 +48,9 @@ async def shell_run_command(
         await shell_run_command("echo hey it works")
         ```
     """
-    logger = logger or get_logger()
+    if logger is None:
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger("prefect_shell.utils")
 
     current_env = os.environ.copy()
     current_env.update(env or {})
