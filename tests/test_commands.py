@@ -7,14 +7,17 @@ from prefect import flow
 from prefect_shell.commands import shell_run_command
 
 
-def test_shell_run_command_error():
+def test_shell_run_command_error(caplog):
     @flow
     def test_flow():
         return shell_run_command(command="ls this/is/invalid")
 
-    match = "this/is/invalid': No such file or directory\n"
+    match = "No such file or directory"
     with pytest.raises(RuntimeError, match=match):
         test_flow().result(raise_on_failure=True)
+    for record in caplog.records:
+        if record.levelname == "ERROR":
+            assert match in record
 
 
 def test_shell_run_command():
