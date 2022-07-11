@@ -7,7 +7,33 @@ from prefect import flow
 from prefect_shell.commands import shell_run_command
 
 
-def test_shell_run_command_error(caplog):
+@pytest.fixture
+def prefect_caplog(caplog):
+    logger = logging.getLogger("prefect")
+
+    # TODO: Determine a better pattern for this and expose for all tests
+    logger.propagate = True
+
+    try:
+        yield caplog
+    finally:
+        logger.propagate = False
+
+
+@pytest.fixture
+def prefect_task_runs_caplog(prefect_caplog):
+    logger = logging.getLogger("prefect.task_runs")
+
+    # TODO: Determine a better pattern for this and expose for all tests
+    logger.propagate = True
+
+    try:
+        yield prefect_caplog
+    finally:
+        logger.propagate = False
+
+
+def test_shell_run_command_error(prefect_task_runs_caplog):
     @flow
     def test_flow():
         return shell_run_command(command="ls this/is/invalid")
@@ -15,30 +41,35 @@ def test_shell_run_command_error(caplog):
     match = "No such file or directory"
     with pytest.raises(RuntimeError, match=match):
         test_flow().result(raise_on_failure=True)
-    for record in caplog.records:
-        if record.levelname == "ERROR":
-            assert match in record
+
+    assert len(prefect_task_runs_caplog.records) == 0
 
 
-def test_shell_run_command():
+def test_shell_run_command(prefect_task_runs_caplog):
+    prefect_task_runs_caplog.set_level(logging.INFO)
+    echo_msg = "_THIS_ IS WORKING!!!!"
+
     @flow
     def test_flow():
-        return shell_run_command(command="echo work!")
+        return shell_run_command(command=f"echo {echo_msg}")
 
-    assert test_flow().result().result() == "work!"
+    assert test_flow().result().result() == echo_msg
+    assert echo_msg in prefect_task_runs_caplog.text
 
 
-def test_shell_run_command_stream_level(caplog):
+def test_shell_run_command_stream_level(prefect_task_runs_caplog):
+    prefect_task_runs_caplog.set_level(logging.WARNING)
+    echo_msg = "_THIS_ IS WORKING!!!!"
+
     @flow
     def test_flow():
         return shell_run_command(
-            command="echo work!",
+            command=f"echo {echo_msg}",
             stream_level=logging.WARNING,
         )
 
-    test_flow()
-    for record in caplog.records:
-        assert record.levelname == "DEBUG"
+    assert test_flow().result().result() == echo_msg
+    assert echo_msg in prefect_task_runs_caplog.text
 
 
 def test_shell_run_command_helper_command():
