@@ -12,7 +12,8 @@ def test_shell_run_command_error():
     def test_flow():
         return shell_run_command(command="ls this/is/invalid")
 
-    with pytest.raises(RuntimeError):
+    match = "ls: this/is/invalid: No such file or directory"
+    with pytest.raises(RuntimeError, match=match):
         test_flow().result(raise_on_failure=True)
 
 

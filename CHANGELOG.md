@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- To improve visibility, show stderr in exception rather than in a logger.exception statement, and will use last line of output as stderr if the stderr is missing. - [#17](//github.com/PrefectHQ/prefect_shell/pull/17)
 
 ### Deprecated
 
