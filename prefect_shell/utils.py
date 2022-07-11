@@ -36,7 +36,7 @@ async def shell_run_command(
             or just the last line as a string; defaults to `False`.
         stream_level: The logging level of the stream.
         logger: Can pass a desired logger; if not passed, will automatically
-            gets a run logger from Prefect.
+            gets a generic logger.
 
     Returns:
         If return all, returns all lines as a list; else the last line as a string.
