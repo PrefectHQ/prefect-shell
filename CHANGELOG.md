@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Improve error visibility on failure - [#17](https://github.com/PrefectHQ/prefect_shell/pull/17
+- Improve error visibility on failure - [#17](https://github.com/PrefectHQ/prefect_shell/pull/17)
 - Updated tests to be compatible with core Prefect library (v2.0b9) and bumped required version - [#21](https://github.com/PrefectHQ/prefect_shell/pull/21)
 
 ### Deprecated
