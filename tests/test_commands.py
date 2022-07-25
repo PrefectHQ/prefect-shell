@@ -53,7 +53,7 @@ def test_shell_run_command(prefect_task_runs_caplog):
     def test_flow():
         return shell_run_command(command=f"echo {echo_msg}")
 
-    assert test_flow().result().result() == echo_msg
+    assert test_flow() == echo_msg
     assert echo_msg in prefect_task_runs_caplog.text
 
 
@@ -68,7 +68,7 @@ def test_shell_run_command_stream_level(prefect_task_runs_caplog):
             stream_level=logging.WARNING,
         )
 
-    assert test_flow().result().result() == echo_msg
+    assert test_flow() == echo_msg
     assert echo_msg in prefect_task_runs_caplog.text
 
 
@@ -77,7 +77,7 @@ def test_shell_run_command_helper_command():
     def test_flow():
         return shell_run_command(command="pwd", helper_command="cd $HOME")
 
-    assert test_flow().result().result() == os.path.expandvars("$HOME")
+    assert test_flow() == os.path.expandvars("$HOME")
 
 
 def test_shell_run_command_return_all():
@@ -85,4 +85,4 @@ def test_shell_run_command_return_all():
     def test_flow():
         return shell_run_command(command="echo work! && echo yes!", return_all=True)
 
-    assert test_flow().result().result() == ["work!", "yes!"]
+    assert test_flow() == ["work!", "yes!"]
