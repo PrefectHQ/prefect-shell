@@ -89,4 +89,6 @@ async def shell_run_command(
                 )
                 raise RuntimeError(msg)
 
-    return lines if return_all else lines[-1]
+    line = lines[-1] if lines else ""
+    return lines if return_all else line
+
