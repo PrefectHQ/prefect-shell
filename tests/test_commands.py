@@ -86,3 +86,11 @@ def test_shell_run_command_return_all():
         return shell_run_command(command="echo work! && echo yes!", return_all=True)
 
     assert test_flow() == ["work!", "yes!"]
+
+
+def test_shell_run_command_no_output():
+    @flow
+    def test_flow():
+        return shell_run_command(command="sleep 1")
+
+    assert test_flow() == ""

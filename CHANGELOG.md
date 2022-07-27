@@ -21,12 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.1.1
 
-Released on July 25th, 2022.
+Released on July 27th, 2022.
 
 ### Changed
 
 - Improve error visibility on failure - [#17](https://github.com/PrefectHQ/prefect-shell/pull/17)
 - Updated tests to be compatible with core Prefect library (v2.0b9) and bumped required version - [#21](https://github.com/PrefectHQ/prefect-shell/pull/21)
+
+### Fixed
+- Fixed running commands that do not return any output - [#23](https://github.com/PrefectHQ/prefect-shell/pull/23)
 
 ### Removed
 - Removed `utils.run_shell_command`; can be accessed using `commands.run_shell_command.fn` - [#19](https://github.com/PrefectHQ/prefect-shell/pull/19)
