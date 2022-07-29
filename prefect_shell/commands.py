@@ -91,4 +91,3 @@ async def shell_run_command(
 
     line = lines[-1] if lines else ""
     return lines if return_all else line
-
