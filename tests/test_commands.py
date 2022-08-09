@@ -94,3 +94,25 @@ def test_shell_run_command_no_output():
         return shell_run_command(command="sleep 1")
 
     assert test_flow() == ""
+
+
+def test_shell_run_command_uses_current_env():
+    @flow
+    def test_flow():
+        return shell_run_command(command="echo $HOME")
+
+    assert test_flow() == os.environ["HOME"]
+
+
+def test_shell_run_command_update_current_env():
+    @flow
+    def test_flow():
+        return shell_run_command(
+            command="echo $HOME && echo $TEST_VAR",
+            env={"TEST_VAR": "test value"},
+            return_all=True,
+        )
+
+    result = test_flow()
+    assert result[0] == os.environ["HOME"]
+    assert result[1] == "test value"
