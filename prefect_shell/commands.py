@@ -72,7 +72,7 @@ async def shell_run_command(
             shell_command = " ".join(shell_command)
 
         lines = []
-        async with await open_process(shell_command, env=env) as process:
+        async with await open_process(shell_command, env=current_env) as process:
             async for text in TextReceiveStream(process.stdout):
                 logger.log(level=stream_level, msg=text)
                 lines.extend(text.rstrip().split("\n"))
