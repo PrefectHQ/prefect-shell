@@ -1,7 +1,7 @@
 site_name: prefect-shell
-site_url: https://prefecthq.github.io/prefect-shell
-repo_url: https://github.com/prefecthq/prefect-shell
-edit_uri: /edit/main/docs/
+site_url: https://PrefectHQ.github.io/prefect-shell
+repo_url: https://github.com/PrefectHQ/prefect-shell
+edit_uri: edit/main/docs/
 theme:
   name: material
   favicon: img/favicon.ico
