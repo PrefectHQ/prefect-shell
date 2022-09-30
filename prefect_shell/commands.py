@@ -60,12 +60,17 @@ async def shell_run_command(
     current_env = os.environ.copy()
     current_env.update(env or {})
 
-    with tempfile.NamedTemporaryFile(prefix="prefect-") as tmp:
+    if shell.lower() == "powershell":
+        suffix = ".ps1"
+    else:
+        suffix = ""
+
+    with tempfile.NamedTemporaryFile(prefix="prefect-", suffix=suffix, delete=False) as tmp:
         if helper_command:
             tmp.write(helper_command.encode())
             tmp.write(os.linesep.encode())
         tmp.write(command.encode())
-        tmp.flush()
+        tmp.close()
 
         shell_command = [shell, tmp.name]
         if sys.platform == "win32":
@@ -88,6 +93,9 @@ async def shell_run_command(
                     f"Command failed with exit code {process.returncode}:\n" f"{stderr}"
                 )
                 raise RuntimeError(msg)
+        
+        if os.path.exists(tmp.name):
+            os.remove(tmp.name)
 
     line = lines[-1] if lines else ""
     return lines if return_all else line
