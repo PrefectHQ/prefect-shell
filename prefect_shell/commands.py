@@ -64,35 +64,37 @@ async def shell_run_command(
 
     extension = ".ps1" if shell.lower() == "powershell" else extension
 
-    with tempfile.NamedTemporaryFile(prefix="prefect-", suffix=extension, delete=False) as tmp:
-        if helper_command:
-            tmp.write(helper_command.encode())
-            tmp.write(os.linesep.encode())
-        tmp.write(command.encode())
-        tmp.close()
+    tmp = tempfile.NamedTemporaryFile(prefix="prefect-", suffix=extension, delete=False)
 
-        shell_command = [shell, tmp.name]
-        if sys.platform == "win32":
-            shell_command = " ".join(shell_command)
+    if helper_command:
+        tmp.write(helper_command.encode())
+        tmp.write(os.linesep.encode())
+    tmp.write(command.encode())
+    tmp.close()
 
-        lines = []
-        async with await open_process(shell_command, env=current_env) as process:
-            async for text in TextReceiveStream(process.stdout):
-                logger.log(level=stream_level, msg=text)
-                lines.extend(text.rstrip().split("\n"))
+    shell_command = [shell, tmp.name]
+    if sys.platform == "win32":
+        shell_command = " ".join(shell_command)
 
-            await process.wait()
-            if process.returncode:
-                stderr = "\n".join(
-                    [text async for text in TextReceiveStream(process.stderr)]
-                )
-                if not stderr and lines:
-                    stderr = f"{lines[-1]}\n"
-                msg = (
-                    f"Command failed with exit code {process.returncode}:\n" f"{stderr}"
-                )
-                raise RuntimeError(msg)
-        
+    lines = []
+    async with await open_process(shell_command, env=current_env) as process:
+        async for text in TextReceiveStream(process.stdout):
+            logger.log(level=stream_level, msg=text)
+            lines.extend(text.rstrip().split("\n"))
+
+        await process.wait()
+        if process.returncode:
+            stderr = "\n".join(
+                [text async for text in TextReceiveStream(process.stderr)]
+            )
+            if not stderr and lines:
+                stderr = f"{lines[-1]}\n"
+            msg = (
+                f"Command failed with exit code {process.returncode}:\n" f"{stderr}"
+            )
+            raise RuntimeError(msg)
+    
+    if os.path.exists(tmp.name):
         try:
             os.path.exists(tmp.name)
         finally:
