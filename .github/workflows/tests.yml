@@ -5,9 +5,10 @@ on: [pull_request]
 jobs:
   run-tests:
     name: Run Tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version:
           - "3.7"
           - "3.8"
