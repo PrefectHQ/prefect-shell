@@ -13,15 +13,9 @@ from prefect_shell.commands import shell_run_command
 def test_shell_run_command_error_windows(prefect_task_runs_caplog):
     @flow
     def test_flow():
-        return shell_run_command(
-            command="ls this/is/invalid", return_all=True, shell="powershell"
-        )
+        return shell_run_command(command="throw", return_all=True, shell="powershell")
 
-    homedir = os.environ["USERPROFILE"]
-    match = (
-        f"ls : Cannot find path {homedir}\\this\\is\\invalid because it does not exist."
-    )
-    with pytest.raises(RuntimeError, match=match):
+    with pytest.raises(RuntimeError, match="Exception:"):
         test_flow()
 
     assert len(prefect_task_runs_caplog.records) == 0
@@ -43,7 +37,7 @@ def test_shell_run_command_windows(prefect_task_runs_caplog):
 
     assert test_flow() == echo_msg
     for record in prefect_task_runs_caplog.records:
-        if echo_msg in record:
+        if echo_msg in record.msg:
             break  # it's in the records
     else:
         raise AssertionError
@@ -67,9 +61,11 @@ def test_shell_run_command_stream_level_windows(prefect_task_runs_caplog):
     print(prefect_task_runs_caplog.text)
 
     assert test_flow() == echo_msg
-    assert echo_msg in prefect_task_runs_caplog.text.replace("\r\n\n", "").replace(
-        "\r\n", " "
-    )
+    for record in prefect_task_runs_caplog.records:
+        if echo_msg in record.msg:
+            break  # it's in the records
+    else:
+        raise AssertionError
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="see test_commands.py")
