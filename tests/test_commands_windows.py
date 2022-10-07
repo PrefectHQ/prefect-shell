@@ -42,9 +42,11 @@ def test_shell_run_command_windows(prefect_task_runs_caplog):
     print(prefect_task_runs_caplog.text)
 
     assert test_flow() == echo_msg
-    assert echo_msg in prefect_task_runs_caplog.text.replace("\r\n\n", "").replace(
-        "\r\n", " "
-    )
+    for record in prefect_task_runs_caplog.records:
+        if echo_msg in record:
+            break  # it's in the records
+    else:
+        raise AssertionError
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="see test_commands.py")
