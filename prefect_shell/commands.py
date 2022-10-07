@@ -66,38 +66,36 @@ async def shell_run_command(
 
     tmp = tempfile.NamedTemporaryFile(prefix="prefect-", suffix=extension, delete=False)
 
-    if helper_command:
-        tmp.write(helper_command.encode())
-        tmp.write(os.linesep.encode())
-    tmp.write(command.encode())
-    tmp.close()
+    try:
+        if helper_command:
+            tmp.write(helper_command.encode())
+            tmp.write(os.linesep.encode())
+        tmp.write(command.encode())
+        tmp.close()
 
-    shell_command = [shell, tmp.name]
-    if sys.platform == "win32":
-        shell_command = " ".join(shell_command)
+        shell_command = [shell, tmp.name]
+        if sys.platform == "win32":
+            shell_command = " ".join(shell_command)
 
-    lines = []
-    async with await open_process(shell_command, env=current_env) as process:
-        async for text in TextReceiveStream(process.stdout):
-            logger.log(level=stream_level, msg=text)
-            lines.extend(text.rstrip().split("\n"))
+        lines = []
+        async with await open_process(shell_command, env=current_env) as process:
+            async for text in TextReceiveStream(process.stdout):
+                logger.log(level=stream_level, msg=text)
+                lines.extend(text.rstrip().split("\n"))
 
-        await process.wait()
-        if process.returncode:
-            stderr = "\n".join(
-                [text async for text in TextReceiveStream(process.stderr)]
-            )
-            if not stderr and lines:
-                stderr = f"{lines[-1]}\n"
-            msg = (
-                f"Command failed with exit code {process.returncode}:\n" f"{stderr}"
-            )
-            raise RuntimeError(msg)
-    
-    if os.path.exists(tmp.name):
-        try:
-            os.path.exists(tmp.name)
-        finally:
+            await process.wait()
+            if process.returncode:
+                stderr = "\n".join(
+                    [text async for text in TextReceiveStream(process.stderr)]
+                )
+                if not stderr and lines:
+                    stderr = f"{lines[-1]}\n"
+                msg = (
+                    f"Command failed with exit code {process.returncode}:\n" f"{stderr}"
+                )
+                raise RuntimeError(msg)
+    finally:
+        if os.path.exists(tmp.name):
             os.remove(tmp.name)
 
     line = lines[-1] if lines else ""

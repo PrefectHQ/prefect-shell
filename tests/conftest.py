@@ -1,4 +1,5 @@
 import logging
+
 import pytest
 
 
@@ -15,7 +16,6 @@ def prefect_caplog(caplog):
         logger.propagate = False
 
 
-
 @pytest.fixture(scope="function")
 def prefect_task_runs_caplog(prefect_caplog):
     logger = logging.getLogger("prefect.task_runs")
@@ -27,4 +27,3 @@ def prefect_task_runs_caplog(prefect_caplog):
         yield prefect_caplog
     finally:
         logger.propagate = False
-
