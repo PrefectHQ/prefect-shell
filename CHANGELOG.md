@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `extension` keyword argument in `shell_run_command` - [#37](https://github.com/PrefectHQ/prefect-shell/pull/37)
+
 ### Changed
 
 ### Deprecated
@@ -18,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Use current environment in `shell_run_command` - [#28](https://github.com/PrefectHQ/prefect-shell/pull/28)
+- Using `shell_run_command` on Windows environment - [#37](https://github.com/PrefectHQ/prefect-shell/pull/37)
 
 ### Security
 
