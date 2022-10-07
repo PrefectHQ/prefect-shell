@@ -66,7 +66,7 @@ If you encounter and bugs while using `prefect-shell`, feel free to open an issu
 
 If you have any questions or issues while using `prefect-shell`, you can find help in either the [Prefect Discourse forum](https://discourse.prefect.io/) or the [Prefect Slack community](https://prefect.io/slack).
 
-Feel free to ⭐️ or watch [`prefect-shell`](https://github.com/PrefectHQ/prefect-shell) for updates too!
+Feel free to star or watch [`prefect-shell`](https://github.com/PrefectHQ/prefect-shell) for updates too!
 
 ## Development
 
