@@ -24,6 +24,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## 0.1.2
+
+Released on October 7th, 2022.
+
+### Added
+
+- Added `extension` keyword argument in `shell_run_command` - [#37](https://github.com/PrefectHQ/prefect-shell/pull/37)
+
+### Fixed
+
+- Use current environment in `shell_run_command` - [#28](https://github.com/PrefectHQ/prefect-shell/pull/28)
+- Using `shell_run_command` on Windows environment - [#37](https://github.com/PrefectHQ/prefect-shell/pull/37)
+
 ## 0.1.1
 
 Released on August 2nd, 2022.
