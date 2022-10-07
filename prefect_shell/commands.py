@@ -18,6 +18,7 @@ async def shell_run_command(
     env: Optional[dict] = None,
     helper_command: Optional[str] = None,
     shell: str = "bash",
+    extension: Optional[str] = None,
     return_all: bool = False,
     stream_level: int = logging.INFO,
 ) -> Union[List, str]:
@@ -34,6 +35,7 @@ async def shell_run_command(
             Can be used to change directories, define helper functions, etc.
             for different commands in a flow.
         shell: Shell to run the command with.
+        extension: File extension to be appended to the command to be executed.
         return_all: Whether this task should return all lines of stdout as a list,
             or just the last line as a string.
         stream_level: The logging level of the stream;
@@ -60,12 +62,16 @@ async def shell_run_command(
     current_env = os.environ.copy()
     current_env.update(env or {})
 
-    with tempfile.NamedTemporaryFile(prefix="prefect-") as tmp:
+    extension = ".ps1" if shell.lower() == "powershell" else extension
+
+    tmp = tempfile.NamedTemporaryFile(prefix="prefect-", suffix=extension, delete=False)
+
+    try:
         if helper_command:
             tmp.write(helper_command.encode())
             tmp.write(os.linesep.encode())
         tmp.write(command.encode())
-        tmp.flush()
+        tmp.close()
 
         shell_command = [shell, tmp.name]
         if sys.platform == "win32":
@@ -88,6 +94,9 @@ async def shell_run_command(
                     f"Command failed with exit code {process.returncode}:\n" f"{stderr}"
                 )
                 raise RuntimeError(msg)
+    finally:
+        if os.path.exists(tmp.name):
+            os.remove(tmp.name)
 
     line = lines[-1] if lines else ""
     return lines if return_all else line

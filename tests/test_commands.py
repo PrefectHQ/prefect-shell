@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 import pytest
 from prefect import flow
@@ -7,32 +8,7 @@ from prefect import flow
 from prefect_shell.commands import shell_run_command
 
 
-@pytest.fixture
-def prefect_caplog(caplog):
-    logger = logging.getLogger("prefect")
-
-    # TODO: Determine a better pattern for this and expose for all tests
-    logger.propagate = True
-
-    try:
-        yield caplog
-    finally:
-        logger.propagate = False
-
-
-@pytest.fixture
-def prefect_task_runs_caplog(prefect_caplog):
-    logger = logging.getLogger("prefect.task_runs")
-
-    # TODO: Determine a better pattern for this and expose for all tests
-    logger.propagate = True
-
-    try:
-        yield prefect_caplog
-    finally:
-        logger.propagate = False
-
-
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_error(prefect_task_runs_caplog):
     @flow
     def test_flow():
@@ -40,11 +16,12 @@ def test_shell_run_command_error(prefect_task_runs_caplog):
 
     match = "No such file or directory"
     with pytest.raises(RuntimeError, match=match):
-        test_flow().result(raise_on_failure=True)
+        test_flow()
 
     assert len(prefect_task_runs_caplog.records) == 0
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command(prefect_task_runs_caplog):
     prefect_task_runs_caplog.set_level(logging.INFO)
     echo_msg = "_THIS_ IS WORKING!!!!"
@@ -57,6 +34,7 @@ def test_shell_run_command(prefect_task_runs_caplog):
     assert echo_msg in prefect_task_runs_caplog.text
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_stream_level(prefect_task_runs_caplog):
     prefect_task_runs_caplog.set_level(logging.WARNING)
     echo_msg = "_THIS_ IS WORKING!!!!"
@@ -72,6 +50,7 @@ def test_shell_run_command_stream_level(prefect_task_runs_caplog):
     assert echo_msg in prefect_task_runs_caplog.text
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_helper_command():
     @flow
     def test_flow():
@@ -80,6 +59,7 @@ def test_shell_run_command_helper_command():
     assert test_flow() == os.path.expandvars("$HOME")
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_return_all():
     @flow
     def test_flow():
@@ -88,6 +68,7 @@ def test_shell_run_command_return_all():
     assert test_flow() == ["work!", "yes!"]
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_no_output():
     @flow
     def test_flow():
@@ -96,6 +77,7 @@ def test_shell_run_command_no_output():
     assert test_flow() == ""
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_uses_current_env():
     @flow
     def test_flow():
@@ -104,6 +86,7 @@ def test_shell_run_command_uses_current_env():
     assert test_flow() == os.environ["HOME"]
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_update_current_env():
     @flow
     def test_flow():
