@@ -26,7 +26,7 @@ Released on October 11th, 2022.
 
 ### Added
 
-- Added `cwd` keyword argument in `shell_run_command`
+- Added `cwd` keyword argument in `shell_run_command` - [#41](https://github.com/PrefectHQ/prefect-shell/pull/41)
 
 
 ## 0.1.2
