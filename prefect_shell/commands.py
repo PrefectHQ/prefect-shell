@@ -21,7 +21,7 @@ async def shell_run_command(
     extension: Optional[str] = None,
     return_all: bool = False,
     stream_level: int = logging.INFO,
-    cwd: Union[str, bytes, PathLike, None] = None,
+    cwd: Union[str, bytes, os.PathLike, None] = None,
 ) -> Union[List, str]:
     """
     Runs arbitrary shell commands.

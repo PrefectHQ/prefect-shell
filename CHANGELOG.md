@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+
+## 0.1.3
+
+Released on October 11th, 2022.
+
+### Added
+
+- Added `cwd` keyword argument in `shell_run_command`
+
+
 ## 0.1.2
 
 Released on October 7th, 2022.
@@ -54,4 +64,3 @@ Released on March 9th, 2022.
 ### Added
 
 - `shell_run_command` task and utility - [#1](https://github.com/PrefectHQ/prefect-shell/pull/1)
-
