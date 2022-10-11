@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `cwd` keyword argument in `shell_run_command` - [#41](https://github.com/PrefectHQ/prefect-shell/pull/41)
+
 ### Changed
 
 ### Deprecated
@@ -18,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
 
 ## 0.1.2
 
@@ -54,4 +57,3 @@ Released on March 9th, 2022.
 ### Added
 
 - `shell_run_command` task and utility - [#1](https://github.com/PrefectHQ/prefect-shell/pull/1)
-

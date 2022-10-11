@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from pathlib import Path
 
 import pytest
 from prefect import flow
@@ -57,6 +58,15 @@ def test_shell_run_command_helper_command():
         return shell_run_command(command="pwd", helper_command="cd $HOME")
 
     assert test_flow() == os.path.expandvars("$HOME")
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
+def test_shell_run_command_cwd():
+    @flow
+    def test_flow():
+        return shell_run_command(command="pwd", cwd=Path.home())
+
+    assert test_flow() == os.fspath(Path.home())
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
