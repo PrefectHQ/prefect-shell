@@ -2,6 +2,7 @@ import glob
 import logging
 import os
 import sys
+from pathlib import Path
 
 import pytest
 from prefect import flow
@@ -79,6 +80,19 @@ def test_shell_run_command_helper_command_windows():
         )
 
     assert test_flow() == os.path.expandvars("$USERPROFILE")
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="see test_commands.py")
+def test_shell_run_command_cwd():
+    @flow
+    def test_flow():
+        return shell_run_command(
+            command="Get-Location",
+            shell="powershell",
+            cwd=Path.home(),
+        )
+
+    assert test_flow() == os.fspath(Path.home())
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="see test_commands.py")

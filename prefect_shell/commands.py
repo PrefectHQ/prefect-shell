@@ -21,6 +21,7 @@ async def shell_run_command(
     extension: Optional[str] = None,
     return_all: bool = False,
     stream_level: int = logging.INFO,
+    cwd: Union[str, bytes, PathLike, None] = None,
 ) -> Union[List, str]:
     """
     Runs arbitrary shell commands.
@@ -40,6 +41,7 @@ async def shell_run_command(
             or just the last line as a string.
         stream_level: The logging level of the stream;
             defaults to 20 equivalent to `logging.INFO`.
+        cwd: The working directory context the command will be executed within
 
     Returns:
         If return all, returns all lines as a list; else the last line as a string.
@@ -78,7 +80,7 @@ async def shell_run_command(
             shell_command = " ".join(shell_command)
 
         lines = []
-        async with await open_process(shell_command, env=current_env) as process:
+        async with await open_process(shell_command, env=current_env, cwd=cwd) as process:
             async for text in TextReceiveStream(process.stdout):
                 logger.log(level=stream_level, msg=text)
                 lines.extend(text.rstrip().split("\n"))
