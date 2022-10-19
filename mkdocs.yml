@@ -1,7 +1,7 @@
 site_name: prefect-shell
 site_url: https://PrefectHQ.github.io/prefect-shell
 repo_url: https://github.com/PrefectHQ/prefect-shell
-edit_uri: edit/main/docs/
+edit_uri: edit/main/docs
 theme:
   name: material
   favicon: img/favicon.ico
@@ -10,7 +10,7 @@ theme:
     accent: blue
   icon:
     repo: fontawesome/brands/github
-  logo: img/prefect-logo-white.png
+  logo: img/prefect-logo-mark-solid-white-500.png
   font:
     text: Inter
     code: Source Code Pro
@@ -34,16 +34,16 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          rendering:
+          options:
             show_root_heading: True
             show_object_full_path: False
-            show_category_heading: False
+            show_category_heading: True
             show_signature: False
-            show_bases: False
+            show_bases: True
             heading_level: 1
-      watch:
-        - prefect_shell/
-        - README.md
+watch:
+    - prefect_shell/
+    - README.md
 
 nav:
     - Home: index.md
