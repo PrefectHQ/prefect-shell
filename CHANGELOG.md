@@ -9,11 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `cwd` keyword argument in `shell_run_command` - [#41](https://github.com/PrefectHQ/prefect-shell/pull/41)
-
-### Changed
-- Have `shell_run_command` default to `shell="powershell" if sys.platform == "win32" else "bash"` - [#47](https://github.com/PrefectHQ/prefect-shell/pull/47)
-
 ### Deprecated
 
 ### Removed
@@ -21,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## 0.1.3
+
+### Added
+
+- Added `cwd` keyword argument in `shell_run_command` - [#41](https://github.com/PrefectHQ/prefect-shell/pull/41)
+
+### Changed
+- Have `shell_run_command` default to `shell="powershell" if sys.platform == "win32" else "bash"` - [#47](https://github.com/PrefectHQ/prefect-shell/pull/47)
 
 ## 0.1.2
 
