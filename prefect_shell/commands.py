@@ -17,7 +17,7 @@ async def shell_run_command(
     command: str,
     env: Optional[dict] = None,
     helper_command: Optional[str] = None,
-    shell: str = "bash",
+    shell: Optional[str] = None,
     extension: Optional[str] = None,
     return_all: bool = False,
     stream_level: int = logging.INFO,
@@ -64,10 +64,15 @@ async def shell_run_command(
     current_env = os.environ.copy()
     current_env.update(env or {})
 
+    if shell is None:
+        # if shell is not specified:
+        # use powershell for windows
+        # use bash for other platforms
+        shell = "powershell" if sys.platform == "win32" else "bash"
+
     extension = ".ps1" if shell.lower() == "powershell" else extension
 
     tmp = tempfile.NamedTemporaryFile(prefix="prefect-", suffix=extension, delete=False)
-
     try:
         if helper_command:
             tmp.write(helper_command.encode())
@@ -76,8 +81,6 @@ async def shell_run_command(
         tmp.close()
 
         shell_command = [shell, tmp.name]
-        if sys.platform == "win32":
-            shell_command = " ".join(shell_command)
 
         lines = []
         async with await open_process(

@@ -5,11 +5,14 @@ from pathlib import Path
 
 import pytest
 from prefect import flow
+from prefect.testing.utilities import AsyncMock
 
 from prefect_shell.commands import shell_run_command
 
+if sys.platform == "win32":
+    pytest.skip(reason="see test_commands_windows.py", allow_module_level=True)
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
+
 def test_shell_run_command_error(prefect_task_runs_caplog):
     @flow
     def test_flow():
@@ -22,7 +25,6 @@ def test_shell_run_command_error(prefect_task_runs_caplog):
     assert len(prefect_task_runs_caplog.records) == 0
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command(prefect_task_runs_caplog):
     prefect_task_runs_caplog.set_level(logging.INFO)
     echo_msg = "_THIS_ IS WORKING!!!!"
@@ -35,7 +37,6 @@ def test_shell_run_command(prefect_task_runs_caplog):
     assert echo_msg in prefect_task_runs_caplog.text
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_stream_level(prefect_task_runs_caplog):
     prefect_task_runs_caplog.set_level(logging.WARNING)
     echo_msg = "_THIS_ IS WORKING!!!!"
@@ -51,7 +52,6 @@ def test_shell_run_command_stream_level(prefect_task_runs_caplog):
     assert echo_msg in prefect_task_runs_caplog.text
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_helper_command():
     @flow
     def test_flow():
@@ -60,7 +60,6 @@ def test_shell_run_command_helper_command():
     assert test_flow() == os.path.expandvars("$HOME")
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_cwd():
     @flow
     def test_flow():
@@ -69,7 +68,6 @@ def test_shell_run_command_cwd():
     assert test_flow() == os.fspath(Path.home())
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_return_all():
     @flow
     def test_flow():
@@ -78,7 +76,6 @@ def test_shell_run_command_return_all():
     assert test_flow() == ["work!", "yes!"]
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_no_output():
     @flow
     def test_flow():
@@ -87,7 +84,6 @@ def test_shell_run_command_no_output():
     assert test_flow() == ""
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_uses_current_env():
     @flow
     def test_flow():
@@ -96,7 +92,6 @@ def test_shell_run_command_uses_current_env():
     assert test_flow() == os.environ["HOME"]
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="see test_commands_windows.py")
 def test_shell_run_command_update_current_env():
     @flow
     def test_flow():
@@ -109,3 +104,35 @@ def test_shell_run_command_update_current_env():
     result = test_flow()
     assert result[0] == os.environ["HOME"]
     assert result[1] == "test value"
+
+
+class AsyncIter:
+    def __init__(self, items):
+        self.items = items
+
+    async def __aiter__(self):
+        for item in self.items:
+            yield item
+
+
+@pytest.mark.parametrize("shell", [None, "bash", "zsh"])
+def test_shell_run_command_override_shell(shell, monkeypatch):
+    open_process_mock = AsyncMock()
+    stdout_mock = AsyncMock()
+    stdout_mock.receive.side_effect = lambda: b"received"
+    open_process_mock.return_value.__aenter__.return_value = AsyncMock(
+        stdout=stdout_mock
+    )
+    open_process_mock.return_value.__aenter__.return_value.returncode = 0
+    monkeypatch.setattr("prefect_shell.commands.open_process", open_process_mock)
+    monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
+
+    @flow
+    def test_flow():
+        return shell_run_command(
+            command="echo 'testing'",
+            shell=shell,
+        )
+
+    test_flow()
+    assert open_process_mock.call_args_list[0][0][0][0] == shell or "bash"
