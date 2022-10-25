@@ -2,10 +2,10 @@ import logging
 import os
 import sys
 from pathlib import Path
-from unittest.mock import AsyncMock
 
 import pytest
 from prefect import flow
+from prefect.testing.utilities import AsyncMock
 
 from prefect_shell.commands import shell_run_command
 
