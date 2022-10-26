@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://PrefectHQ.github.io/prefect-shell/commands/">
       
       <link rel="icon" href="../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.0, mkdocs-material-8.5.6">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
     
     
       
@@ -88,7 +88,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="prefect-shell" class="md-header__button md-logo" aria-label="prefect-shell" data-md-component="logo">
       
-  <img src="../img/prefect-logo-white.png" alt="logo">
+  <img src="../img/prefect-logo-mark-solid-white-500.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -185,7 +185,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="prefect-shell" class="md-nav__button md-logo" aria-label="prefect-shell" data-md-component="logo">
       
-  <img src="../img/prefect-logo-white.png" alt="logo">
+  <img src="../img/prefect-logo-mark-solid-white-500.png" alt="logo">
 
     </a>
     prefect-shell
@@ -262,9 +262,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prefect_shell.commands-functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#prefect_shell.commands.shell_run_command" class="md-nav__link">
     shell_run_command()
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -303,9 +316,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#prefect_shell.commands-functions" class="md-nav__link">
+    Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#prefect_shell.commands.shell_run_command" class="md-nav__link">
     shell_run_command()
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -353,20 +379,20 @@
 
 
 
-
+<h2 id="prefect_shell.commands-functions">Functions</h2>
 
 <div class="doc doc-object doc-function">
 
 
 
-<h2 id="prefect_shell.commands.shell_run_command" class="doc doc-heading">
+<h3 id="prefect_shell.commands.shell_run_command" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">shell_run_command</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
 
-</h2>
+</h3>
 
 
   <div class="doc doc-contents ">
@@ -422,11 +448,11 @@ for different commands in a flow.</p></td>
         <tr>
           <td><code>shell</code></td>
           <td>
-                <code>str</code>
+                <code><span title="typing.Optional">Optional</span>[str]</code>
           </td>
           <td><p>Shell to run the command with.</p></td>
           <td>
-                <code>&#39;bash&#39;</code>
+                <code>None</code>
           </td>
         </tr>
         <tr>
@@ -459,6 +485,16 @@ or just the last line as a string.</p></td>
 defaults to 20 equivalent to <code>logging.INFO</code>.</p></td>
           <td>
                 <code>logging.INFO</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>cwd</code></td>
+          <td>
+                <code><span title="typing.Union">Union</span>[str, bytes, os.<span title="os.PathLike">PathLike</span>, None]</code>
+          </td>
+          <td><p>The working directory context the command will be executed within</p></td>
+          <td>
+                <code>None</code>
           </td>
         </tr>
     </tbody>
@@ -584,15 +620,23 @@ defaults to 20 equivalent to <code>logging.INFO</code>.</p></td>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
-<span class="normal">102</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@task</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@task</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">shell_run_command</span><span class="p">(</span>
     <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">helper_command</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">shell</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bash&quot;</span><span class="p">,</span>
+    <span class="n">shell</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">extension</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_all</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">stream_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+    <span class="n">cwd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Runs arbitrary shell commands.</span>
@@ -612,6 +656,7 @@ defaults to 20 equivalent to <code>logging.INFO</code>.</p></td>
 <span class="sd">            or just the last line as a string.</span>
 <span class="sd">        stream_level: The logging level of the stream;</span>
 <span class="sd">            defaults to 20 equivalent to `logging.INFO`.</span>
+<span class="sd">        cwd: The working directory context the command will be executed within</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        If return all, returns all lines as a list; else the last line as a string.</span>
@@ -634,10 +679,15 @@ defaults to 20 equivalent to <code>logging.INFO</code>.</p></td>
     <span class="n">current_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">current_env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env</span> <span class="ow">or</span> <span class="p">{})</span>
 
+    <span class="k">if</span> <span class="n">shell</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># if shell is not specified:</span>
+        <span class="c1"># use powershell for windows</span>
+        <span class="c1"># use bash for other platforms</span>
+        <span class="n">shell</span> <span class="o">=</span> <span class="s2">&quot;powershell&quot;</span> <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span> <span class="k">else</span> <span class="s2">&quot;bash&quot;</span>
+
     <span class="n">extension</span> <span class="o">=</span> <span class="s2">&quot;.ps1&quot;</span> <span class="k">if</span> <span class="n">shell</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;powershell&quot;</span> <span class="k">else</span> <span class="n">extension</span>
 
     <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;prefect-&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">helper_command</span><span class="p">:</span>
             <span class="n">tmp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">helper_command</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
@@ -646,11 +696,11 @@ defaults to 20 equivalent to <code>logging.INFO</code>.</p></td>
         <span class="n">tmp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="n">shell_command</span> <span class="o">=</span> <span class="p">[</span><span class="n">shell</span><span class="p">,</span> <span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
-            <span class="n">shell_command</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">shell_command</span><span class="p">)</span>
 
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">open_process</span><span class="p">(</span><span class="n">shell_command</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">current_env</span><span class="p">)</span> <span class="k">as</span> <span class="n">process</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="k">await</span> <span class="n">open_process</span><span class="p">(</span>
+            <span class="n">shell_command</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">current_env</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">process</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">TextReceiveStream</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">stream_level</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
@@ -743,10 +793,10 @@ defaults to 20 equivalent to <code>logging.INFO</code>.</p></td>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.078830c0.min.js"></script>
+      <script src="../assets/javascripts/bundle.8492ddcf.min.js"></script>
       
     
   </body>

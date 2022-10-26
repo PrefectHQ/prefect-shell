@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://PrefectHQ.github.io/prefect-shell/">
       
       <link rel="icon" href="img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.0, mkdocs-material-8.5.6">
+      <meta name="generator" content="mkdocs-1.4.1, mkdocs-material-8.5.7">
     
     
       
@@ -88,7 +88,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="." title="prefect-shell" class="md-header__button md-logo" aria-label="prefect-shell" data-md-component="logo">
       
-  <img src="img/prefect-logo-white.png" alt="logo">
+  <img src="img/prefect-logo-mark-solid-white-500.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -185,7 +185,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href="." title="prefect-shell" class="md-nav__button md-logo" aria-label="prefect-shell" data-md-component="logo">
       
-  <img src="img/prefect-logo-white.png" alt="logo">
+  <img src="img/prefect-logo-mark-solid-white-500.png" alt="logo">
 
     </a>
     prefect-shell
@@ -436,9 +436,9 @@
     <a href="https://github.com/PrefectHQ/prefect-shell/pulse" alt="Activity">
         <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/prefect-shell?color=0052FF&labelColor=090422" /></a>
     <br>
-    <a href="https://prefect-shell-community.slack.com" alt="Slack">
+    <a href="https://prefect-community.slack.com" alt="Slack">
         <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=0052FF&labelColor=090422&logo=slack" /></a>
-    <a href="https://discourse.prefect-shell.io/" alt="Discourse">
+    <a href="https://discourse.prefect.io/" alt="Discourse">
         <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
 </p>
 
@@ -448,15 +448,11 @@
 <h3 id="python-setup">Python setup</h3>
 <p>Requires an installation of Python 3.7+.</p>
 <p>We recommend using a Python virtual environment manager such as pipenv, conda or virtualenv.</p>
-<p>These tasks are designed to work with Prefect 2.0. For more information about how to use Prefect, please refer to the <a href="https://orion-docs.prefect.io/">Prefect documentation</a>.</p>
+<p>These tasks are designed to work with Prefect 2. For more information about how to use Prefect, please refer to the <a href="https://orion-docs.prefect.io/">Prefect documentation</a>.</p>
 <h3 id="installation">Installation</h3>
 <p>Install <code>prefect-shell</code> with <code>pip</code>:</p>
-<div class="highlight"><pre><span></span><code>pip install prefect-shell
+<div class="highlight"><pre><span></span><code>pip install -U prefect-shell
 </code></pre></div>
-<p>Then, register to <a href="https://orion-docs.prefect.io/ui/blocks/">view the block</a> on Prefect Cloud:</p>
-<div class="highlight"><pre><span></span><code>prefect block register -m prefect_shell.credentials
-</code></pre></div>
-<p>Note, to use the <code>load</code> method on Blocks, you must already have a block document <a href="https://orion-docs.prefect.io/concepts/blocks/#saving-blocks">saved through code</a> or <a href="https://orion-docs.prefect.io/ui/blocks/">saved through the UI</a>.</p>
 <h3 id="write-and-run-a-flow">Write and run a flow</h3>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect</span> <span class="kn">import</span> <span class="n">flow</span>
 <span class="kn">from</span> <span class="nn">prefect_shell</span> <span class="kn">import</span> <span class="n">shell_run_command</span>
@@ -468,7 +464,7 @@
 <span class="n">example_shell_run_command_flow</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="resources">Resources</h2>
-<p>If you encounter and bugs while using <code>prefect-shell</code>, feel free to open an issue in the <a href="https://github.com/PrefectHQ/prefect-shell">prefect-shell</a> repository.</p>
+<p>If you encounter any bugs while using <code>prefect-shell</code>, feel free to open an issue in the <a href="https://github.com/PrefectHQ/prefect-shell">prefect-shell</a> repository.</p>
 <p>If you have any questions or issues while using <code>prefect-shell</code>, you can find help in either the <a href="https://discourse.prefect.io/">Prefect Discourse forum</a> or the <a href="https://prefect.io/slack">Prefect Slack community</a>.</p>
 <p>Feel free to star or watch <a href="https://github.com/PrefectHQ/prefect-shell"><code>prefect-shell</code></a> for updates too!</p>
 <h2 id="development">Development</h2>
@@ -540,10 +536,10 @@ pre-commit install
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.078830c0.min.js"></script>
+      <script src="assets/javascripts/bundle.8492ddcf.min.js"></script>
       
     
   </body>
