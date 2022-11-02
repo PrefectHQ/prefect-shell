@@ -78,6 +78,9 @@ async def shell_run_command(
             tmp.write(helper_command.encode())
             tmp.write(os.linesep.encode())
         tmp.write(command.encode())
+        if shell.lower() == "powershell":
+            # if powershell, set exit code to that of command
+            tmp.write("\r\nExit $LastExitCode".encode())
         tmp.close()
 
         shell_command = [shell, tmp.name]
