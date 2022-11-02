@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- If using PowerShell, set exit code to that of command - [#51](https://github.com/PrefectHQ/prefect-shell/pull/51)
+
 ### Security
 
 ## 0.1.3
