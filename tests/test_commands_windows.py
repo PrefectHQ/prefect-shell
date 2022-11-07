@@ -162,6 +162,21 @@ def test_shell_run_command_ensure_tmp_file_removed():
     assert len(glob.glob(f"{temp_dir}\\prefect-*.ps1")) == 0
 
 
+def test_shell_run_command_throw_exception_on_nonzero_exit_code():
+    @flow
+    def test_flow():
+        return shell_run_command(
+            # ping ??? returns exit code 1
+            command="echo 'two'; echo 'lines'; ping ???", 
+            return_all=True,
+            shell="powershell")
+
+    with pytest.raises(RuntimeError):
+        result = test_flow()
+        assert result[0].rstrip() == "two"
+        assert result[1].rstrip() == "lines"
+
+
 class AsyncIter:
     def __init__(self, items):
         self.items = items
