@@ -167,7 +167,8 @@ def test_shell_run_command_throw_exception_on_nonzero_exit_code():
     def test_flow():
         return shell_run_command(
             command="ping ???", # ping ??? returns exit code 1
-            shell="powershell")
+            shell="powershell"
+        )
 
     with pytest.raises(RuntimeError):
         test_flow()
