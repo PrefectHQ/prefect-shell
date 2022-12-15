@@ -4,12 +4,18 @@ import logging
 import os
 import sys
 import tempfile
-from typing import List, Optional, Union
+from io import TextIOBase
+from typing import Any, Dict, List, Optional, TextIO, Union
 
-from anyio import open_process
-from anyio.streams.text import TextReceiveStream
+import anyio
+from anyio.abc import Process
+from anyio.streams.text import TextReceiveStream, TextSendStream
 from prefect import task
+from prefect.blocks.abstract import JobBlock, JobRun
 from prefect.logging import get_run_logger
+from pydantic import Field
+
+TextSink = Union[anyio.AsyncFile, TextIO, TextSendStream]
 
 
 @task
@@ -86,7 +92,7 @@ async def shell_run_command(
         shell_command = [shell, tmp.name]
 
         lines = []
-        async with await open_process(
+        async with await anyio.open_process(
             shell_command, env=current_env, cwd=cwd
         ) as process:
             async for text in TextReceiveStream(process.stdout):
@@ -110,3 +116,94 @@ async def shell_run_command(
 
     line = lines[-1] if lines else ""
     return lines if return_all else line
+
+
+class ShellJobRun(JobRun):
+    """
+    A class representing a run of a shell job.
+    """
+
+    shell_job: "ShellJob"
+    process: Process = Field(
+        default=..., description="The process that is running the job."
+    )
+
+    async def _consume_process_output(
+        self,
+        stdout_sink: Optional[TextSink] = None,
+        stderr_sink: Optional[TextSink] = None,
+    ):
+        """Show output as it is received from the process."""
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(
+                self._stream_text,
+                TextReceiveStream(self.process.stdout),
+                stdout_sink,
+            )
+            tg.start_soon(
+                self._stream_text,
+                TextReceiveStream(self.process.stderr),
+                stderr_sink,
+            )
+
+    async def _stream_text(self, source: TextReceiveStream, sink: Optional[TextSink]):
+        """Show output as it is received from the process."""
+        if isinstance(sink, TextIOBase):
+            # Convert the blocking sink to an async-compatible object
+            sink = anyio.wrap_file(sink)
+
+        async for item in source:
+            if isinstance(sink, TextSendStream):
+                await sink.send(item)
+            elif isinstance(sink, anyio.AsyncFile):
+                await sink.write(item)
+                await sink.flush()
+            elif sink is None:
+                pass  # Consume the item but perform no action
+            else:
+                raise TypeError(f"Unsupported sink type {type(sink).__name__}")
+
+    async def wait_for_completion(self):
+        """
+        Wait for the job run to complete.
+        """
+        if self.shell_job.stream_output is True:
+            stream_output = (sys.stdout, sys.stderr)
+        else:
+            stream_output = (None, None)
+
+        await self._consume_process_output(
+            stdout_sink=stream_output[0], stderr_sink=stream_output[1]
+        )
+        await self.process.wait()
+
+    async def fetch_result(self) -> List[str]:
+        """
+        Retrieve the results of the job run and return them.
+        """
+        # TODO: this doesn't work if consume_process_output
+        await (self.process.stdout.receive() + self.process.stderr.receive()).decode(
+            "utf-8"
+        )
+
+
+class ShellJob(JobBlock):
+    """
+    Block that represents an entity that can trigger a long running execution.
+    """
+
+    command: str = Field(default=..., description="The command to run.")
+    stream_output: bool = Field(default=True, description="Whether to stream output.")
+
+    async def trigger(self, **open_kwargs: Dict[str, Any]) -> ShellJobRun:
+        """
+        Triggers a job run in an external service and returns a JobRun object
+        to track the execution of the run.
+
+        Args:
+            **open_kwargs: Additional keyword arguments to pass to `open_process`
+        """
+        # TODO: support windows
+        # Question: do we need `helper_command` or can we remove it?
+        process = anyio.open_process(self.command, **open_kwargs)
+        return ShellJobRun(process=process, shell_job=self)
