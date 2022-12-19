@@ -21,6 +21,7 @@ async def shell_run_command(
     extension: Optional[str] = None,
     return_all: bool = False,
     stream_level: int = logging.INFO,
+    encoding: str = "utf-8",
     cwd: Union[str, bytes, os.PathLike, None] = None,
 ) -> Union[List, str]:
     """
@@ -41,6 +42,8 @@ async def shell_run_command(
             or just the last line as a string.
         stream_level: The logging level of the stream;
             defaults to 20 equivalent to `logging.INFO`.
+        encoding: character encoding to use for decoding bytes to strings (defaults to
+            ``utf-8``)
         cwd: The working directory context the command will be executed within
 
     Returns:
@@ -89,14 +92,14 @@ async def shell_run_command(
         async with await open_process(
             shell_command, env=current_env, cwd=cwd
         ) as process:
-            async for text in TextReceiveStream(process.stdout):
+            async for text in TextReceiveStream(process.stdout, encoding=encoding):
                 logger.log(level=stream_level, msg=text)
                 lines.extend(text.rstrip().split("\n"))
 
             await process.wait()
             if process.returncode:
                 stderr = "\n".join(
-                    [text async for text in TextReceiveStream(process.stderr)]
+                    [text async for text in TextReceiveStream(process.stderr, encoding=encoding)]
                 )
                 if not stderr and lines:
                     stderr = f"{lines[-1]}\n"
