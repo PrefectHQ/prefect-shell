@@ -52,17 +52,18 @@ def example_shell_run_command_flow():
 example_shell_run_command_flow()
 ```
 
-# Use `with_options` to customize options on any existing task or flow
+### Use `with_options` to customize options on any existing task or flow
+
+
+```python
+from prefect import flow
+from prefect_shell import shell_run_command
 
 custom_shell_run_command = shell_run_command.with_options(
     name="My custom task name",
     retries=2,
     retry_delay_seconds=10,
 )
-
-```python
-from prefect import flow
-from prefect_shell import shell_run_command
 
 @flow
 def example_shell_run_command_flow():
