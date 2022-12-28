@@ -39,7 +39,7 @@ Install `prefect-shell` with `pip`:
 pip install -U prefect-shell
 ```
 
-### Write and run a flow
+### Execute `ls` using `shell_run_command`
 
 ```python
 from prefect import flow
@@ -52,6 +52,27 @@ def example_shell_run_command_flow():
 example_shell_run_command_flow()
 ```
 
+# Use `with_options` to customize options on any existing task or flow
+
+custom_shell_run_command = shell_run_command.with_options(
+    name="My custom task name",
+    retries=2,
+    retry_delay_seconds=10,
+)
+
+```python
+from prefect import flow
+from prefect_shell import shell_run_command
+
+@flow
+def example_shell_run_command_flow():
+    return custom_shell_run_command(command="echo hello", return_all=True)
+
+example_shell_run_command_flow()
+```
+
+For more tips on how to use tasks and flows in a Collection, check out [Using Collections](https://orion-docs.prefect.io/collections/usage/)!
+
 ## Resources
 
 If you encounter any bugs while using `prefect-shell`, feel free to open an issue in the [prefect-shell](https://github.com/PrefectHQ/prefect-shell) repository.
@@ -60,17 +81,22 @@ If you have any questions or issues while using `prefect-shell`, you can find he
 
 Feel free to star or watch [`prefect-shell`](https://github.com/PrefectHQ/prefect-shell) for updates too!
 
-## Development
-
-If you'd like to install a version of `prefect-shell` for development, clone the repository and perform an editable install with `pip`:
-
-```bash
-git clone https://github.com/PrefectHQ/prefect-shell.git
-
-cd prefect-shell/
-
+## Contribute
+ 
+If you'd like to help contribute to fix an issue or add a feature to `prefect-shell`, please [propose changes through a pull request from a fork of the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+ 
+### Contribution Steps:
+1. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo#forking-a-repository)
+2. [Clone the forked repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo#cloning-your-forked-repository)
+3. Install the repository and its dependencies:
+```
 pip install -e ".[dev]"
-
-# Install linting pre-commit hooks
+```
+4. Make desired changes.
+5. Add tests.
+6. Insert an entry to [CHANGELOG.md](https://github.com/PrefectHQ/prefect-shell/blob/main/CHANGELOG.md)
+7. Install `pre-commit` to perform quality checks prior to commit:
+```
 pre-commit install
 ```
+8. `git commit`, `git push`, and create a pull request.
