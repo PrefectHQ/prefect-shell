@@ -171,6 +171,11 @@ class ShellJob(JobBlock):
 
     command: str = Field(default=..., description="The command to run.")
     stream_output: bool = Field(default=True, description="Whether to stream output.")
+    env: Dict[str, str] = Field(
+        default_factory=dict,
+        title="Environment Variables",
+        description="Environment variables to use for the subprocess.",
+    )
 
     _exit_stack: AsyncExitStack = PrivateAttr(
         default_factory=AsyncExitStack,
@@ -185,14 +190,17 @@ class ShellJob(JobBlock):
         Args:
             **open_kwargs: Additional keyword arguments to pass to `open_process`
         """
-        # TODO: support windows
-        # Question: do we need `helper_command` or can we remove it?
         command_args = shlex.split(self.command)
+
+        input_env = os.environ.copy()
+        input_env.update(self.env)
+
         process = await self._exit_stack.enter_async_context(
             open_process(
                 command_args,
                 stdout=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
                 stderr=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
+                env=input_env,
                 **open_kwargs,
             )
         )
