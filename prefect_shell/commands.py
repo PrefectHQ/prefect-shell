@@ -162,11 +162,12 @@ class ShellJobRun(JobRun):
 
 class ShellJob(JobBlock):
     """
-    Block that represents an entity that can trigger a long running execution.
+    A block representing a shell job.
 
     Attributes:
         command: The command to run.
         stream_output: Whether to stream output.
+        env: Environment variables to use for the subprocess.
     """
 
     command: str = Field(default=..., description="The command to run.")
