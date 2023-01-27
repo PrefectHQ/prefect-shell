@@ -1,10 +1,13 @@
 """Tasks for interacting with shell commands"""
 
+import asyncio
 import logging
 import os
+import shlex
+import subprocess
 import sys
 import tempfile
-from io import TextIOBase
+from contextlib import AsyncExitStack
 from typing import Any, Dict, List, Optional, TextIO, Union
 
 import anyio
@@ -13,7 +16,9 @@ from anyio.streams.text import TextReceiveStream, TextSendStream
 from prefect import task
 from prefect.blocks.abstract import JobBlock, JobRun
 from prefect.logging import get_run_logger
-from pydantic import Field
+from prefect.utilities.asyncutils import sync_compatible
+from prefect.utilities.processutils import open_process
+from pydantic import Field, PrivateAttr
 
 TextSink = Union[anyio.AsyncFile, TextIO, TextSendStream]
 
@@ -123,78 +128,55 @@ class ShellJobRun(JobRun):
     A class representing a run of a shell job.
     """
 
-    shell_job: "ShellJob"
-    process: Process = Field(
-        default=..., description="The process that is running the job."
-    )
+    def __init__(self, shell_job: "ShellJob", process: Process):
+        self._shell_job = shell_job
+        self._process = process
+        self._output = []
 
-    async def _consume_process_output(
-        self,
-        stdout_sink: Optional[TextSink] = None,
-        stderr_sink: Optional[TextSink] = None,
-    ):
-        """Show output as it is received from the process."""
-        async with anyio.create_task_group() as tg:
-            tg.start_soon(
-                self._stream_text,
-                TextReceiveStream(self.process.stdout),
-                stdout_sink,
-            )
-            tg.start_soon(
-                self._stream_text,
-                TextReceiveStream(self.process.stderr),
-                stderr_sink,
-            )
+    async def _capture_output(self, source):
+        """
+        Capture output from source.
+        """
+        async for text in TextReceiveStream(source):
+            if self._shell_job.stream_output:
+                self.logger.info(text)
+            self._output.append(text)
 
-    async def _stream_text(self, source: TextReceiveStream, sink: Optional[TextSink]):
-        """Show output as it is received from the process."""
-        if isinstance(sink, TextIOBase):
-            # Convert the blocking sink to an async-compatible object
-            sink = anyio.wrap_file(sink)
-
-        async for item in source:
-            if isinstance(sink, TextSendStream):
-                await sink.send(item)
-            elif isinstance(sink, anyio.AsyncFile):
-                await sink.write(item)
-                await sink.flush()
-            elif sink is None:
-                pass  # Consume the item but perform no action
-            else:
-                raise TypeError(f"Unsupported sink type {type(sink).__name__}")
-
+    @sync_compatible
     async def wait_for_completion(self):
         """
         Wait for the job run to complete.
         """
-        if self.shell_job.stream_output is True:
-            stream_output = (sys.stdout, sys.stderr)
-        else:
-            stream_output = (None, None)
-
-        await self._consume_process_output(
-            stdout_sink=stream_output[0], stderr_sink=stream_output[1]
+        await asyncio.gather(
+            self._capture_output(self._process.stdout),
+            self._capture_output(self._process.stderr),
         )
-        await self.process.wait()
 
+    @sync_compatible
     async def fetch_result(self) -> List[str]:
         """
         Retrieve the results of the job run and return them.
         """
-        # TODO: this doesn't work if consume_process_output
-        await (self.process.stdout.receive() + self.process.stderr.receive()).decode(
-            "utf-8"
-        )
+        return self._output
 
 
 class ShellJob(JobBlock):
     """
     Block that represents an entity that can trigger a long running execution.
+
+    Attributes:
+        command: The command to run.
+        stream_output: Whether to stream output.
     """
 
     command: str = Field(default=..., description="The command to run.")
     stream_output: bool = Field(default=True, description="Whether to stream output.")
 
+    _exit_stack: AsyncExitStack = PrivateAttr(
+        default_factory=AsyncExitStack,
+    )
+
+    @sync_compatible
     async def trigger(self, **open_kwargs: Dict[str, Any]) -> ShellJobRun:
         """
         Triggers a job run in an external service and returns a JobRun object
@@ -205,5 +187,20 @@ class ShellJob(JobBlock):
         """
         # TODO: support windows
         # Question: do we need `helper_command` or can we remove it?
-        process = anyio.open_process(self.command, **open_kwargs)
-        return ShellJobRun(process=process, shell_job=self)
+        command_args = shlex.split(self.command)
+        process = await self._exit_stack.enter_async_context(
+            open_process(
+                command_args,
+                stdout=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
+                stderr=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
+                **open_kwargs,
+            )
+        )
+        return ShellJobRun(shell_job=self, process=process)
+
+    @sync_compatible
+    async def close(self):
+        """
+        Close the job block.
+        """
+        await self._exit_stack.close()
