@@ -126,8 +126,8 @@ class ShellProcess(JobRun):
     A class representing a run of a shell job.
     """
 
-    def __init__(self, shell_operation: "ShellCommand", process: Process):
-        self._shell_operation = shell_operation
+    def __init__(self, shell_command: "ShellCommand", process: Process):
+        self._shell_command = shell_command
         self._process = process
         self._output = []
 
@@ -156,34 +156,33 @@ class ShellProcess(JobRun):
         Capture output from source.
         """
         async for text in TextReceiveStream(source):
-            if self._shell_operation.stream_output:
+            if self._shell_command.stream_output:
                 self.logger.info(text)
             self._output.append(text)
 
     @sync_compatible
     async def wait_for_completion(self):
         """
-        Wait for the shell operation to complete.
+        Wait for the shell command to complete.
         """
         try:
-            self.logger.debug(f"Waiting for PID {self._process.pid} to complete.")
+            self.logger.debug(f"Waiting for PID {self.pid} to complete.")
             await asyncio.gather(
                 self._capture_output(self._process.stdout),
                 self._capture_output(self._process.stderr),
             )
         finally:
             self.logger.info(
-                f"PID {self._process.pid} completed with return code "
-                f"{self._process.returncode}."
+                f"PID {self.pid} completed with return code {self.return_code}."
             )
 
     @sync_compatible
     async def fetch_result(self) -> List[str]:
         """
-        Retrieve the results of the shell operation and return them.
+        Retrieve the output of the shell command and return them.
 
         Returns:
-            The lines output from the shell operation as a list.
+            The lines output from the shell command as a list.
         """
         return self._output
 
@@ -233,9 +232,9 @@ class ShellCommand(JobBlock):
     @sync_compatible
     async def trigger(self, **open_kwargs: Dict[str, Any]) -> ShellProcess:
         """
-        Triggers a shell operation and returns the shell operation run object
+        Triggers a shell command and returns the shell command run object
         to track the execution of the run. This method is ideal for long-lasting
-        shell operations; for short-lasting shell operations, it is recommended
+        shell commands; for short-lasting shell commands, it is recommended
         to use `run` instead.
 
         Args:
@@ -261,20 +260,20 @@ class ShellCommand(JobBlock):
             )
         )
         self.logger.info(f"Opened PID {process.pid} for {self.command!r}.")
-        return ShellProcess(shell_operation=self, process=process)
+        return ShellProcess(shell_command=self, process=process)
 
     @sync_compatible
     async def run(self, **open_kwargs: Dict[str, Any]) -> List[str]:
         """
-        Triggers a shell operation, but unlike the trigger method,
+        Triggers a shell command, but unlike the trigger method,
         additionally waits and fetches the result. This is a convenience
-        method for short-lasting shell operations.
+        method for short-lasting shell commands.
 
         Args:
             **open_kwargs: Additional keyword arguments to pass to `open_process`
 
         Returns:
-            The lines output from the shell operation as a list.
+            The lines output from the shell command as a list.
         """
         job_run = await self.trigger(**open_kwargs)
         await job_run.wait_for_completion()
