@@ -18,7 +18,7 @@ from prefect.blocks.abstract import JobBlock, JobRun
 from prefect.logging import get_run_logger
 from prefect.utilities.asyncutils import sync_compatible
 from prefect.utilities.processutils import open_process
-from pydantic import Field, PrivateAttr
+from pydantic import DirectoryPath, Field, PrivateAttr
 
 
 @task
@@ -165,10 +165,17 @@ class ShellProcess(JobRun):
         """
         Wait for the shell operation to complete.
         """
-        await asyncio.gather(
-            self._capture_output(self._process.stdout),
-            self._capture_output(self._process.stderr),
-        )
+        try:
+            self.logger.debug(f"Waiting for PID {self._process.pid} to complete.")
+            await asyncio.gather(
+                self._capture_output(self._process.stdout),
+                self._capture_output(self._process.stderr),
+            )
+        finally:
+            self.logger.info(
+                f"PID {self._process.pid} completed with return code "
+                f"{self._process.returncode}."
+            )
 
     @sync_compatible
     async def fetch_result(self) -> List[str]:
@@ -211,7 +218,7 @@ class ShellCommand(JobBlock):
         title="Environment Variables",
         description="Environment variables to use for the subprocess.",
     )
-    working_dir: str = Field(
+    working_dir: DirectoryPath = Field(
         default=None,
         title="Working Directory",
         description=(
@@ -242,6 +249,7 @@ class ShellCommand(JobBlock):
         input_env = os.environ.copy()
         input_env.update(self.env)
 
+        self.logger.debug("Preparing to execute {command_args} in {self.working_dir!r}")
         process = await self._exit_stack.enter_async_context(
             open_process(
                 command_args,
@@ -252,6 +260,7 @@ class ShellCommand(JobBlock):
                 **open_kwargs,
             )
         )
+        self.logger.info(f"Opened PID {process.pid} for {self.command!r}.")
         return ShellProcess(shell_operation=self, process=process)
 
     @sync_compatible
