@@ -161,9 +161,9 @@ class ShellProcess(JobRun):
             self._output.extend(text.split(os.linesep))
 
     @sync_compatible
-    async def wait_for_completion(self):
+    async def wait_for_completion(self) -> None:
         """
-        Wait for the shell command to complete.
+        Wait for the shell command to complete after a process is triggered.
         """
         try:
             self.logger.debug(f"Waiting for PID {self.pid} to complete.")
@@ -180,7 +180,7 @@ class ShellProcess(JobRun):
     @sync_compatible
     async def fetch_result(self) -> List[str]:
         """
-        Retrieve the output of the shell operation and return them.
+        Retrieve the output of the shell operation.
 
         Returns:
             The lines output from the shell operation as a list.
@@ -197,6 +197,14 @@ class ShellOperation(JobBlock):
     should call `close` to ensure all processes are closed.
 
     Attributes:
+        commands: A list of commands to execute sequentially.
+        stream_output: Whether to stream output.
+        env: A dictionary of environment variables to set for the shell operation.
+        working_directory: The working directory context the commands
+            will be executed within.
+        shell: The shell to use to execute the commands.
+        extension: The extension to use for the temporary file.
+            if unset defaults to `.ps1` on Windows and `.sh` on other platforms.
 
     Examples:
         Load a configured block:
@@ -206,6 +214,10 @@ class ShellOperation(JobBlock):
         shell_operation = ShellOperation.load("BLOCK_NAME")
         ```
     """
+
+    _block_type_name = "Shell Operation"
+    _logo_url = "https://raw.githubusercontent.com/PrefectHQ/prefect-shell/main/docs/images/logo.png"  # noqa: E501
+    _documentation_url = "https://images.ctfassets.net/gm98wzqotmnx/3Nn6D7zVqrdIsGjufgpES4/abd12fa6427121f7363758aafc468d9a/Terminalicon2.png?h=250"  # noqa: E501
 
     commands: List[str] = Field(
         default=..., description="A list of commands to execute sequentially."
@@ -256,6 +268,19 @@ class ShellOperation(JobBlock):
 
         Returns:
             A `ShellProcess` object.
+
+        Examples:
+            Sleep for 5 seconds and then print "Hello, world!":
+            ```python
+            from prefect_shell import ShellOperation
+
+            shell_operation = ShellOperation(
+                commands=["sleep 5", "echo 'Hello, world!'"],
+            )
+            shell_process = await shell_operation.trigger()
+            shell_process.wait_for_completion()
+            shell_output = shell_process.fetch_result()
+            ```
         """
         extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
         temp_file = self._exit_stack.enter_context(
@@ -273,10 +298,13 @@ class ShellOperation(JobBlock):
         temp_file.write(joined_commands.encode())
         temp_file.flush()
 
-        if self.shell is None:
-            shell = "powershell" if sys.platform == "win32" else "bash"
+        if self.shell is None and sys.platform == "win32" or extension == ".ps1":
+            shell = "powershell"
+        elif self.shell is None:
+            shell = "bash"
         else:
             shell = self.shell.lower()
+
         if shell == "powershell":
             # if powershell, set exit code to that of command
             temp_file.write("\r\nExit $LastExitCode".encode())
@@ -314,6 +342,17 @@ class ShellOperation(JobBlock):
 
         Returns:
             The lines output from the shell command as a list.
+
+        Examples:
+            Sleep for 5 seconds and then print "Hello, world!":
+            ```python
+            from prefect_shell import ShellOperation
+
+            shell_operation = ShellOperation(
+                commands=["sleep 5", "echo 'Hello, world!'"],
+            )
+            shell_output = await shell_operation.run()
+            ```
         """
         job_run = await self.trigger(**open_kwargs)
         await job_run.wait_for_completion()
