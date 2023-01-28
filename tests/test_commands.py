@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 from prefect import flow
-from prefect.testing.utilities import AsyncMock
+from prefect.testing.utilities import AsyncMock, MagicMock
 
-from prefect_shell.commands import shell_run_command
+from prefect_shell.commands import ShellOperation, shell_run_command
 
 if sys.platform == "win32":
     pytest.skip(reason="see test_commands_windows.py", allow_module_level=True)
@@ -136,3 +136,59 @@ def test_shell_run_command_override_shell(shell, monkeypatch):
 
     test_flow()
     assert open_process_mock.call_args_list[0][0][0][0] == shell or "bash"
+
+
+class TestShellOperation:
+    def test_run_error(self):
+        with ShellOperation(commands=["ls this/is/invalid"]) as op:
+            with pytest.raises(RuntimeError, match="return code 1"):
+                op.run()
+
+    def test_run_output(self, prefect_task_runs_caplog):
+        with ShellOperation(commands=["echo 'testing\nthe output'", "echo good"]) as op:
+            assert op.run() == ["testing", "the output", "good"]
+        records = prefect_task_runs_caplog.records
+        assert len(records) == 4
+        assert "triggered with 2 commands running" in records[0].message
+        assert "stream output:\ntesting\nthe output\ngood" in records[1].message
+        assert "completed with return code 0" in records[2].message
+        assert "closed all open processes" in records[3].message
+
+    def test_current_env(self):
+        with ShellOperation(commands=["echo $HOME"]) as op:
+            assert op.run() == [os.environ["HOME"]]
+
+    def test_updated_env(self):
+        with ShellOperation(commands=["echo $HOME"]) as op:
+            op = ShellOperation(commands=["echo $HOME"], env={"HOME": "test_home"})
+            assert op.run() == ["test_home"]
+
+    def test_cwd(self):
+        with ShellOperation(commands=["pwd"], working_dir=Path.home()) as op:
+            assert op.run() == [os.fspath(Path.home())]
+
+    def gen(self):
+        yield b"t"
+        yield b"e"
+
+    @pytest.mark.parametrize("shell", [None, "bash", "zsh"])
+    def test_updated_shell(self, monkeypatch, shell):
+        open_process_mock = MagicMock(name="open")
+        stdout_mock = AsyncMock(name="stdout")
+        stdout_mock.receive.side_effect = self.gen()
+        open_process_mock.return_value.__aenter__.return_value = AsyncMock(
+            name="open_context",
+            pid=42,
+            returncode=0,
+            stdout=stdout_mock,
+            stderr=stdout_mock,
+        )
+        monkeypatch.setattr("prefect_shell.commands.open_process", open_process_mock)
+
+        with ShellOperation(commands=["pwd"], working_dir=Path.home()) as op:
+            op.run(
+                command="echo 'testing'",
+                shell=shell,
+            )
+
+        assert open_process_mock.call_args_list[0][0][0][0] == shell or "bash"

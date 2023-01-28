@@ -157,7 +157,7 @@ class ShellProcess(JobRun):
         async for output in TextReceiveStream(source):
             text = output.rstrip()
             if self._shell_operation.stream_output:
-                self.logger.info(f"Process stream output:{os.linesep}{text}")
+                self.logger.info(f"PID {self.pid} stream output:{os.linesep}{text}")
             self._output.extend(text.split(os.linesep))
 
     @sync_compatible
@@ -176,6 +176,10 @@ class ShellProcess(JobRun):
             self.logger.info(
                 f"PID {self.pid} completed with return code {self.return_code}."
             )
+            if self.return_code != 0:
+                raise RuntimeError(
+                    f"PID {self.pid} failed with return code {self.return_code}."
+                )
 
     @sync_compatible
     async def fetch_result(self) -> List[str]:
@@ -274,12 +278,12 @@ class ShellOperation(JobBlock):
             ```python
             from prefect_shell import ShellOperation
 
-            shell_operation = ShellOperation(
+            with ShellOperation(
                 commands=["sleep 5", "echo 'Hello, world!'"],
-            )
-            shell_process = await shell_operation.trigger()
-            shell_process.wait_for_completion()
-            shell_output = shell_process.fetch_result()
+            ) as shell_operation:
+                shell_process = await shell_operation.trigger()
+                shell_process.wait_for_completion()
+                shell_output = shell_process.fetch_result()
             ```
         """
         extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
@@ -325,8 +329,8 @@ class ShellOperation(JobBlock):
             )
         )
         self.logger.info(
-            f"Opened PID {process.pid} containing {num_commands} commands "
-            f"within the {(self.working_dir or '.')!r} directory."
+            f"PID {process.pid} triggered with {num_commands} commands running "
+            f"inside the {(self.working_dir or '.')!r} directory."
         )
         return ShellProcess(shell_operation=self, process=process)
 
@@ -348,10 +352,10 @@ class ShellOperation(JobBlock):
             ```python
             from prefect_shell import ShellOperation
 
-            shell_operation = ShellOperation(
+            with ShellOperation(
                 commands=["sleep 5", "echo 'Hello, world!'"],
-            )
-            shell_output = await shell_operation.run()
+            ) as shell_operation:
+                shell_output = await shell_operation.run()
             ```
         """
         job_run = await self.trigger(**open_kwargs)
