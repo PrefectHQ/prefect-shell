@@ -3,7 +3,6 @@
 import asyncio
 import logging
 import os
-import shlex
 import subprocess
 import sys
 import tempfile
@@ -123,11 +122,11 @@ async def shell_run_command(
 
 class ShellProcess(JobRun):
     """
-    A class representing a run of a shell job.
+    A class representing a shell process.
     """
 
-    def __init__(self, shell_command: "ShellCommand", process: Process):
-        self._shell_command = shell_command
+    def __init__(self, shell_operation: "ShellOperation", process: Process):
+        self._shell_operation = shell_operation
         self._process = process
         self._output = []
 
@@ -155,10 +154,11 @@ class ShellProcess(JobRun):
         """
         Capture output from source.
         """
-        async for text in TextReceiveStream(source):
-            if self._shell_command.stream_output:
-                self.logger.info(text)
-            self._output.append(text)
+        async for output in TextReceiveStream(source):
+            text = output.rstrip()
+            if self._shell_operation.stream_output:
+                self.logger.info(f"Process stream output:{os.linesep}{text}")
+            self._output.extend(text.split(os.linesep))
 
     @sync_compatible
     async def wait_for_completion(self):
@@ -171,6 +171,7 @@ class ShellProcess(JobRun):
                 self._capture_output(self._process.stdout),
                 self._capture_output(self._process.stderr),
             )
+            await self._process.wait()
         finally:
             self.logger.info(
                 f"PID {self.pid} completed with return code {self.return_code}."
@@ -179,38 +180,36 @@ class ShellProcess(JobRun):
     @sync_compatible
     async def fetch_result(self) -> List[str]:
         """
-        Retrieve the output of the shell command and return them.
+        Retrieve the output of the shell operation and return them.
 
         Returns:
-            The lines output from the shell command as a list.
+            The lines output from the shell operation as a list.
         """
         return self._output
 
 
-class ShellCommand(JobBlock):
+class ShellOperation(JobBlock):
     """
-    A block representing a shell command.
+    A block representing a shell operation, containing multiple commands.
 
     It is recommended to use this block as a context manager, which will automatically
     close all of its opened processes when the context is exited. If not, the user
     should call `close` to ensure all processes are closed.
 
     Attributes:
-        command: The command to run.
-        stream_output: Whether to stream output.
-        env: Environment variables to use for the subprocess.
-        working_dir: The working directory context the command will be executed within.
 
     Examples:
         Load a configured block:
         ```python
-        from prefect_shell import ShellCommand
+        from prefect_shell import ShellOperation
 
-        shell_command = ShellCommand.load("BLOCK_NAME")
+        shell_operation = ShellOperation.load("BLOCK_NAME")
         ```
     """
 
-    command: str = Field(default=..., description="The command to run.")
+    commands: List[str] = Field(
+        default=..., description="A list of commands to execute sequentially."
+    )
     stream_output: bool = Field(default=True, description="Whether to stream output.")
     env: Dict[str, str] = Field(
         default_factory=dict,
@@ -221,7 +220,22 @@ class ShellCommand(JobBlock):
         default=None,
         title="Working Directory",
         description=(
-            "The working directory context the command will be executed within."
+            "The absolute path to the working directory "
+            "the command will be executed within."
+        ),
+    )
+    shell: str = Field(
+        default=None,
+        description=(
+            "The shell to run the command with; if unset, "
+            "defaults to `powershell` on Windows and `bash` on other platforms."
+        ),
+    )
+    extension: Optional[str] = Field(
+        default=None,
+        description=(
+            "The extension to use for the temporary file; if unset, "
+            "defaults to `.ps1` on Windows and `.sh` on other platforms."
         ),
     )
 
@@ -235,23 +249,46 @@ class ShellCommand(JobBlock):
         Triggers a shell command and returns the shell command run object
         to track the execution of the run. This method is ideal for long-lasting
         shell commands; for short-lasting shell commands, it is recommended
-        to use `run` instead.
+        to use the `run` method instead.
 
         Args:
-            **open_kwargs: Additional keyword arguments to pass to `open_process`
+            **open_kwargs: Additional keyword arguments to pass to `open_process`.
 
         Returns:
             A `ShellProcess` object.
         """
-        command_args = shlex.split(self.command)
+        extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
+        temp_file = self._exit_stack.enter_context(
+            tempfile.NamedTemporaryFile(
+                prefix="prefect-",
+                suffix=extension,
+            )
+        )
 
+        joined_commands = os.linesep.join(self.commands)
+        self.logger.debug(
+            f"Writing the following commands to "
+            f"{temp_file.name!r}:{os.linesep}{joined_commands}"
+        )
+        temp_file.write(joined_commands.encode())
+        temp_file.flush()
+
+        if self.shell is None:
+            shell = "powershell" if sys.platform == "win32" else "bash"
+        else:
+            shell = self.shell.lower()
+        if shell == "powershell":
+            # if powershell, set exit code to that of command
+            temp_file.write("\r\nExit $LastExitCode".encode())
+
+        num_commands = len(self.commands)
+        trigger_command = [shell, temp_file.name]
         input_env = os.environ.copy()
         input_env.update(self.env)
-
-        self.logger.debug("Preparing to execute {command_args} in {self.working_dir!r}")
+        self.logger.debug(f"Preparing to execue {trigger_command}")
         process = await self._exit_stack.enter_async_context(
             open_process(
-                command_args,
+                trigger_command,
                 stdout=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
                 stderr=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
                 env=input_env,
@@ -259,8 +296,11 @@ class ShellCommand(JobBlock):
                 **open_kwargs,
             )
         )
-        self.logger.info(f"Opened PID {process.pid} for {self.command!r}.")
-        return ShellProcess(shell_command=self, process=process)
+        self.logger.info(
+            f"Opened PID {process.pid} containing {num_commands} commands "
+            f"within the {(self.working_dir or '.')!r} directory."
+        )
+        return ShellProcess(shell_operation=self, process=process)
 
     @sync_compatible
     async def run(self, **open_kwargs: Dict[str, Any]) -> List[str]:
@@ -270,7 +310,7 @@ class ShellCommand(JobBlock):
         method for short-lasting shell commands.
 
         Args:
-            **open_kwargs: Additional keyword arguments to pass to `open_process`
+            **open_kwargs: Additional keyword arguments to pass to `open_process`.
 
         Returns:
             The lines output from the shell command as a list.
@@ -293,7 +333,7 @@ class ShellCommand(JobBlock):
         """
         await self.close()
 
-    async def __aenter__(self) -> "ShellCommand":
+    async def __aenter__(self) -> "ShellOperation":
         """
         Asynchronous version of the enter method.
         """
@@ -305,7 +345,7 @@ class ShellCommand(JobBlock):
         """
         await self.close()
 
-    def __enter__(self) -> "ShellCommand":
+    def __enter__(self) -> "ShellOperation":
         """
         Enter the context of the job block.
         """
