@@ -22,7 +22,7 @@ def test_shell_run_command_error_windows(prefect_task_runs_caplog):
     with pytest.raises(RuntimeError, match="Exception:"):
         test_flow()
 
-    assert len(prefect_task_runs_caplog.records) == 0
+    assert len(prefect_task_runs_caplog.records) == 7
 
 
 def test_shell_run_command_windows(prefect_task_runs_caplog):

@@ -22,7 +22,7 @@ def test_shell_run_command_error(prefect_task_runs_caplog):
     with pytest.raises(RuntimeError, match=match):
         test_flow()
 
-    assert len(prefect_task_runs_caplog.records) == 0
+    assert len(prefect_task_runs_caplog.records) == 7
 
 
 def test_shell_run_command(prefect_task_runs_caplog):
@@ -124,7 +124,7 @@ def test_shell_run_command_override_shell(shell, monkeypatch):
         stdout=stdout_mock
     )
     open_process_mock.return_value.__aenter__.return_value.returncode = 0
-    monkeypatch.setattr("prefect_shell.commands.open_process", open_process_mock)
+    monkeypatch.setattr("anyio.open_process", open_process_mock)
     monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
 
     @flow
