@@ -191,7 +191,7 @@ def test_shell_run_command_override_shell(shell, monkeypatch):
         stdout=stdout_mock
     )
     open_process_mock.return_value.__aenter__.return_value.returncode = 0
-    monkeypatch.setattr("prefect_shell.commands.open_process", open_process_mock)
+    monkeypatch.setattr("anyio.open_process", open_process_mock)
     monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
 
     @flow
@@ -226,8 +226,9 @@ class TestShellOperation:
             assert op.run() == [os.environ["USERPROFILE"]]
 
     def test_updated_env(self):
-        with ShellOperation(commands=["echo $env:TEST_VAR"]) as op:
-            op = ShellOperation(env={"TEST_VAR": "test value"})
+        with ShellOperation(
+            commands=["echo $env:TEST_VAR"], env={"TEST_VAR": "test value"}
+        ) as op:
             assert op.run() == ["test value"]
 
     def test_cwd(self):
@@ -246,7 +247,29 @@ class TestShellOperation:
         monkeypatch.setattr("anyio.open_process", open_process_mock)
         monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
 
-        with ShellOperation(commands=["pwd"], working_dir=Path.home()) as op:
-            op.run(shell=shell)
+        with ShellOperation(
+            commands=["pwd"], shell=shell, working_dir=Path.home()
+        ) as op:
+            op.run()
 
-        assert open_process_mock.call_args_list[0][0][0][0] == shell or "bash"
+        assert open_process_mock.call_args_list[0][0][0][0] == (shell or "bash").lower()
+
+    def test_select_powershell(self, monkeypatch):
+        open_process_mock = AsyncMock(name="open_process")
+        stdout_mock = AsyncMock(name="stdout_mock")
+        stdout_mock.receive.side_effect = lambda: b"received"
+        open_process_mock.return_value.__aenter__.return_value = AsyncMock(
+            stdout=stdout_mock
+        )
+        open_process_mock.return_value.returncode = 0
+        monkeypatch.setattr("anyio.open_process", open_process_mock)
+        monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
+
+        with ShellOperation(commands=["echo 'hey'"], extension=".ps1") as op:
+            op.run()
+
+        assert open_process_mock.call_args_list[0][0][0][0] == "powershell"
+
+    async def test_async_context_manager(self):
+        async with ShellOperation(commands=["echo 'testing'"]) as op:
+            assert await op.run() == ["testing"]
