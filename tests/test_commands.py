@@ -160,7 +160,7 @@ class TestShellOperation:
 
     def test_updated_env(self):
         with ShellOperation(commands=["echo $HOME"]) as op:
-            op = ShellOperation(commands=["echo $HOME"], env={"HOME": "test_home"})
+            op = ShellOperation(env={"HOME": "test_home"})
             assert op.run() == ["test_home"]
 
     def test_cwd(self):

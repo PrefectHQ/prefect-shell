@@ -8,7 +8,7 @@ import pytest
 from prefect import flow
 from prefect.testing.utilities import AsyncMock
 
-from prefect_shell.commands import shell_run_command
+from prefect_shell.commands import ShellOperation, shell_run_command
 
 if sys.platform != "win32":
     pytest.skip(reason="see test_commands.py", allow_module_level=True)
@@ -203,3 +203,50 @@ def test_shell_run_command_override_shell(shell, monkeypatch):
 
     test_flow()
     assert open_process_mock.call_args_list[0][0][0][0] == shell or "powershell"
+
+
+class TestShellOperation:
+    def test_run_error(self):
+        with ShellOperation(commands=["throw"]) as op:
+            with pytest.raises(RuntimeError, match="return code"):
+                op.run()
+
+    def test_run_output(self, prefect_task_runs_caplog):
+        with ShellOperation(commands=["echo 'testing\nthe output'", "echo good"]) as op:
+            assert op.run() == ["testing", "the output", "good"]
+        records = prefect_task_runs_caplog.records
+        assert len(records) == 4
+        assert "triggered with 2 commands running" in records[0].message
+        assert "stream output:\ntesting\nthe output\ngood" in records[1].message
+        assert "completed with return code 0" in records[2].message
+        assert "closed all open processes" in records[3].message
+
+    def test_current_env(self):
+        with ShellOperation(commands=["echo $env:USERPROFILE"]) as op:
+            assert op.run() == [os.environ["USERPROFILE"]]
+
+    def test_updated_env(self):
+        with ShellOperation(commands=["echo $env:TEST_VAR"]) as op:
+            op = ShellOperation(env={"TEST_VAR": "test value"})
+            assert op.run() == ["test value"]
+
+    def test_cwd(self):
+        with ShellOperation(commands=["Get-Location"], working_dir=Path.home()) as op:
+            assert op.run() == [os.fspath(Path.home())]
+
+    @pytest.mark.parametrize("shell", [None, "bash", "zsh"])
+    def test_updated_shell(self, monkeypatch, shell):
+        open_process_mock = AsyncMock(name="open_process")
+        stdout_mock = AsyncMock(name="stdout_mock")
+        stdout_mock.receive.side_effect = lambda: b"received"
+        open_process_mock.return_value.__aenter__.return_value = AsyncMock(
+            stdout=stdout_mock
+        )
+        open_process_mock.return_value.returncode = 0
+        monkeypatch.setattr("anyio.open_process", open_process_mock)
+        monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
+
+        with ShellOperation(commands=["pwd"], working_dir=Path.home()) as op:
+            op.run(shell=shell)
+
+        assert open_process_mock.call_args_list[0][0][0][0] == shell or "bash"
