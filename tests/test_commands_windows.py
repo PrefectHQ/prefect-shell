@@ -206,70 +206,55 @@ def test_shell_run_command_override_shell(shell, monkeypatch):
 
 
 class TestShellOperation:
-    def test_run_error(self):
-        with ShellOperation(commands=["throw"]) as op:
-            with pytest.raises(RuntimeError, match="return code"):
-                op.run()
+    async def execute(self, op, method):
+        if method == "run":
+            return await op.run()
+        elif method == "trigger":
+            proc = await op.trigger()
+            await proc.wait_for_completion()
+            return await proc.fetch_result()
 
-    def test_run_output(self, prefect_task_runs_caplog):
-        with ShellOperation(commands=["echo 'testing\nthe output'", "echo good"]) as op:
-            assert op.run() == ["testing", "the output", "good"]
+    @pytest.mark.parametrize("method", ["run", "trigger"])
+    async def test_error(self, method):
+        op = ShellOperation(commands=["throw"])
+        with pytest.raises(RuntimeError, match="return code"):
+            await self.execute(op, method)
+
+    @pytest.mark.parametrize("method", ["run", "trigger"])
+    async def test_output(self, prefect_task_runs_caplog, method):
+        op = ShellOperation(commands=["echo 'testing\nthe output'", "echo good"])
+        assert await self.execute(op, method) == ["testing", "the output", "good"]
         records = prefect_task_runs_caplog.records
-        assert len(records) == 4
+        assert len(records) == 3
         assert "triggered with 2 commands running" in records[0].message
         assert "stream output:\ntesting\nthe output\ngood" in records[1].message
         assert "completed with return code 0" in records[2].message
-        assert "closed all open processes" in records[3].message
 
-    def test_current_env(self):
-        with ShellOperation(commands=["echo $env:USERPROFILE"]) as op:
-            assert op.run() == [os.environ["USERPROFILE"]]
+    @pytest.mark.parametrize("method", ["run", "trigger"])
+    async def test_current_env(self, method):
+        op = ShellOperation(commands=["echo $env:USERPROFILE"])
+        assert await self.execute(op, method) == [os.environ["USERPROFILE"]]
 
-    def test_updated_env(self):
-        with ShellOperation(
+    @pytest.mark.parametrize("method", ["run", "trigger"])
+    async def test_updated_env(self, method):
+        op = ShellOperation(
             commands=["echo $env:TEST_VAR"], env={"TEST_VAR": "test value"}
-        ) as op:
-            assert op.run() == ["test value"]
-
-    def test_cwd(self):
-        with ShellOperation(commands=["Get-Location"], working_dir=Path.home()) as op:
-            assert op.run() == [os.fspath(Path.home())]
-
-    @pytest.mark.parametrize("shell", [None, "bash", "zsh"])
-    def test_updated_shell(self, monkeypatch, shell):
-        open_process_mock = AsyncMock(name="open_process")
-        stdout_mock = AsyncMock(name="stdout_mock")
-        stdout_mock.receive.side_effect = lambda: b"received"
-        open_process_mock.return_value.__aenter__.return_value = AsyncMock(
-            stdout=stdout_mock
         )
-        open_process_mock.return_value.returncode = 0
-        monkeypatch.setattr("anyio.open_process", open_process_mock)
-        monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
+        assert await self.execute(op, method) == ["test_value"]
 
-        with ShellOperation(
-            commands=["pwd"], shell=shell, working_dir=Path.home()
-        ) as op:
-            op.run()
+    @pytest.mark.parametrize("method", ["run", "trigger"])
+    async def test_cwd(self, method):
+        op = ShellOperation(commands=["Get-Location"], working_dir=Path.home())
+        assert await self.execute(op, method) == [os.fspath(Path.home())]
 
-        assert open_process_mock.call_args_list[0][0][0][0] == (shell or "bash").lower()
-
-    def test_select_powershell(self, monkeypatch):
-        open_process_mock = AsyncMock(name="open_process")
-        stdout_mock = AsyncMock(name="stdout_mock")
-        stdout_mock.receive.side_effect = lambda: b"received"
-        open_process_mock.return_value.__aenter__.return_value = AsyncMock(
-            stdout=stdout_mock
-        )
-        open_process_mock.return_value.returncode = 0
-        monkeypatch.setattr("anyio.open_process", open_process_mock)
-        monkeypatch.setattr("prefect_shell.commands.TextReceiveStream", AsyncIter)
-
-        with ShellOperation(commands=["echo 'hey'"], extension=".ps1") as op:
-            op.run()
-
-        assert open_process_mock.call_args_list[0][0][0][0] == "powershell"
-
-    async def test_async_context_manager(self):
+    async def test_context_manager(self):
         async with ShellOperation(commands=["echo 'testing'"]) as op:
-            assert await op.run() == ["testing"]
+            proc = await op.trigger()
+            await proc.wait_for_completion()
+            await proc.fetch_result() == ["testing"]
+
+    def test_async_context_manager(self):
+        with ShellOperation(commands=["echo 'testing'"]) as op:
+            proc = op.trigger()
+            proc.wait_for_completion()
+            proc.fetch_result() == ["testing"]

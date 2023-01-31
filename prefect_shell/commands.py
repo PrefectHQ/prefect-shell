@@ -165,21 +165,21 @@ class ShellProcess(JobRun):
         """
         Wait for the shell command to complete after a process is triggered.
         """
-        try:
-            self.logger.debug(f"Waiting for PID {self.pid} to complete.")
-            await asyncio.gather(
-                self._capture_output(self._process.stdout),
-                self._capture_output(self._process.stderr),
+        self.logger.debug(f"Waiting for PID {self.pid} to complete.")
+
+        await asyncio.gather(
+            self._capture_output(self._process.stdout),
+            self._capture_output(self._process.stderr),
+        )
+        await self._process.wait()
+
+        if self.return_code != 0:
+            raise RuntimeError(
+                f"PID {self.pid} failed with return code {self.return_code}."
             )
-            await self._process.wait()
-        finally:
-            self.logger.info(
-                f"PID {self.pid} completed with return code {self.return_code}."
-            )
-            if self.return_code != 0:
-                raise RuntimeError(
-                    f"PID {self.pid} failed with return code {self.return_code}."
-                )
+        self.logger.info(
+            f"PID {self.pid} completed with return code {self.return_code}."
+        )
 
     @sync_compatible
     async def fetch_result(self) -> List[str]:
@@ -189,6 +189,8 @@ class ShellProcess(JobRun):
         Returns:
             The lines output from the shell operation as a list.
         """
+        if self._process.returncode is None:
+            self.logger.info("Process is still running, result may be incomplete.")
         return self._output
 
 
@@ -196,9 +198,12 @@ class ShellOperation(JobBlock):
     """
     A block representing a shell operation, containing multiple commands.
 
-    It is recommended to use this block as a context manager, which will automatically
-    close all of its opened processes when the context is exited. If not, the user
-    should call `close` to ensure all processes are closed.
+    For long-lasting operations, use the trigger method and utilize the block as a
+    context manager for automatic closure of processes when context is exited.
+    If not, manually call the close method to close processes.
+
+    For short-lasting operations, use the run method. Context is automatically managed
+    with this method.
 
     Attributes:
         commands: A list of commands to execute sequentially.
@@ -220,8 +225,8 @@ class ShellOperation(JobBlock):
     """
 
     _block_type_name = "Shell Operation"
-    _logo_url = "https://raw.githubusercontent.com/PrefectHQ/prefect-shell/main/docs/images/logo.png"  # noqa: E501
-    _documentation_url = "https://images.ctfassets.net/gm98wzqotmnx/3Nn6D7zVqrdIsGjufgpES4/abd12fa6427121f7363758aafc468d9a/Terminalicon2.png?h=250"  # noqa: E501
+    _logo_url = "https://images.ctfassets.net/gm98wzqotmnx/3Nn6D7zVqrdIsGjufgpES4/abd12fa6427121f7363758aafc468d9a/Terminalicon2.png?h=250"  # noqa: E501
+    _documentation_url = "https://prefecthq.github.io/prefect-shell/commands/#prefect_shell.commands.ShellOperation"  # noqa: E501
 
     commands: List[str] = Field(
         default=..., description="A list of commands to execute sequentially."
@@ -259,32 +264,10 @@ class ShellOperation(JobBlock):
         default_factory=AsyncExitStack,
     )
 
-    @sync_compatible
-    async def trigger(self, **open_kwargs: Dict[str, Any]) -> ShellProcess:
+    def _compile_kwargs(self, **open_kwargs: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Triggers a shell command and returns the shell command run object
-        to track the execution of the run. This method is ideal for long-lasting
-        shell commands; for short-lasting shell commands, it is recommended
-        to use the `run` method instead.
-
-        Args:
-            **open_kwargs: Additional keyword arguments to pass to `open_process`.
-
-        Returns:
-            A `ShellProcess` object.
-
-        Examples:
-            Sleep for 5 seconds and then print "Hello, world!":
-            ```python
-            from prefect_shell import ShellOperation
-
-            with ShellOperation(
-                commands=["sleep 5", "echo 'Hello, world!'"],
-            ) as shell_operation:
-                shell_process = await shell_operation.trigger()
-                shell_process.wait_for_completion()
-                shell_output = shell_process.fetch_result()
-            ```
+        Helper method to compile the kwargs for `open_process` so it's not repeated
+        across the run and trigger methods.
         """
         extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
         temp_file = self._exit_stack.enter_context(
@@ -313,21 +296,51 @@ class ShellOperation(JobBlock):
             # if powershell, set exit code to that of command
             temp_file.write("\r\nExit $LastExitCode".encode())
 
-        num_commands = len(self.commands)
         trigger_command = [shell, temp_file.name]
         input_env = os.environ.copy()
         input_env.update(self.env)
-        self.logger.debug(f"Preparing to execue {trigger_command}")
-        process = await self._exit_stack.enter_async_context(
-            open_process(
-                trigger_command,
-                stdout=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
-                stderr=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
-                env=input_env,
-                cwd=self.working_dir,
-                **open_kwargs,
-            )
+        input_open_kwargs = dict(
+            command=trigger_command,
+            stdout=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
+            stderr=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
+            env=input_env,
+            cwd=self.working_dir,
+            **open_kwargs,
         )
+        return input_open_kwargs
+
+    @sync_compatible
+    async def trigger(self, **open_kwargs: Dict[str, Any]) -> ShellProcess:
+        """
+        Triggers a shell command and returns the shell command run object
+        to track the execution of the run. This method is ideal for long-lasting
+        shell commands; for short-lasting shell commands, it is recommended
+        to use the `run` method instead.
+
+        Args:
+            **open_kwargs: Additional keyword arguments to pass to `open_process`.
+
+        Returns:
+            A `ShellProcess` object.
+
+        Examples:
+            Sleep for 5 seconds and then print "Hello, world!":
+            ```python
+            from prefect_shell import ShellOperation
+
+            with ShellOperation(
+                commands=["sleep 5", "echo 'Hello, world!'"],
+            ) as shell_operation:
+                shell_process = shell_operation.trigger()
+                shell_process.wait_for_completion()
+                shell_output = shell_process.fetch_result()
+            ```
+        """
+        input_open_kwargs = self._compile_kwargs(**open_kwargs)
+        process = await self._exit_stack.enter_async_context(
+            open_process(**input_open_kwargs)
+        )
+        num_commands = len(self.commands)
         self.logger.info(
             f"PID {process.pid} triggered with {num_commands} commands running "
             f"inside the {(self.working_dir or '.')!r} directory."
@@ -337,9 +350,11 @@ class ShellOperation(JobBlock):
     @sync_compatible
     async def run(self, **open_kwargs: Dict[str, Any]) -> List[str]:
         """
-        Triggers a shell command, but unlike the trigger method,
-        additionally waits and fetches the result. This is a convenience
-        method for short-lasting shell commands.
+        Runs a shell command, but unlike the trigger method,
+        additionally waits and fetches the result directly, automatically managing
+        the context. This method is ideal for short-lasting shell commands;
+        for long-lasting shell commands, it is
+        recommended to use the `trigger` method instead.
 
         Args:
             **open_kwargs: Additional keyword arguments to pass to `open_process`.
@@ -352,15 +367,23 @@ class ShellOperation(JobBlock):
             ```python
             from prefect_shell import ShellOperation
 
-            with ShellOperation(
-                commands=["sleep 5", "echo 'Hello, world!'"],
-            ) as shell_operation:
-                shell_output = await shell_operation.run()
+            shell_output = ShellOperation(
+                commands=["sleep 5", "echo 'Hello, world!'"]
+            ).run()
             ```
         """
-        job_run = await self.trigger(**open_kwargs)
-        await job_run.wait_for_completion()
-        return await job_run.fetch_result()
+        input_open_kwargs = self._compile_kwargs(**open_kwargs)
+        async with open_process(**input_open_kwargs) as process:
+            shell_process = ShellProcess(shell_operation=self, process=process)
+            num_commands = len(self.commands)
+            self.logger.info(
+                f"PID {process.pid} triggered with {num_commands} commands running "
+                f"inside the {(self.working_dir or '.')!r} directory."
+            )
+            await shell_process.wait_for_completion()
+            result = await shell_process.fetch_result()
+
+        return result
 
     @sync_compatible
     async def close(self):
