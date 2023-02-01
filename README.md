@@ -20,46 +20,60 @@
 
 Visit the full docs [here](https://PrefectHQ.github.io/prefect-shell) to see additional examples and the API reference.
 
-`prefect-shell` is a collection of prebuilt Prefect tasks that can be used to quickly construct Prefect flows.
+The prefect-shell collection makes it easy to execute shell commands in your Prefect flows. Check out the examples below to get started!
 
 ## Getting Started
 
-### Execute `ls` using `shell_run_command`
+### Integrate with Prefect flows
+
+With prefect-shell, you can bring your trusty shell commands (and/or scripts) straight into the Prefect flow party, complete with awesome Prefect logging.
+
+No more separate logs, just seamless integration. Let's get the shell-abration started!
 
 ```python
 from prefect import flow
-from prefect_shell import shell_run_command
+from datetime import datetime
+from prefect_shell import ShellOperation
 
 @flow
-def example_shell_run_command_flow():
-    return shell_run_command(command="ls .", return_all=True)
+def download_data():
+    today = datetime.today().strftime("%Y%m%d")
+    setup_directory = ShellOperation(
+        commands=[
+            "mkdir -p data",
+            "mkdir -p data/${today}"
+        ],
+        
+        env={"today": today}
+    )
+    # for short running operations, you can use the `run` method
+    setup_directory.run()
 
-example_shell_run_command_flow()
+    download_csv_operation = ShellOperation(
+        commands=[
+            "cd data/${today}",
+            "curl -O https://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v3.0.csv",
+        ],
+        env={"today": today}
+    )
+    # for long running operations, you can use the `trigger` method
+    download_csv_process = download_csv_operation.trigger()
+
+    # then do other things here in the meantime, like downloading another file
+    ...
+
+    # when you're ready, wait for the process to finish
+    download_csv_process.wait_for_completion()
+
+    # if you'd like to get the output lines, you can use the `fetch_result` method
+    return download_csv_process.fetch_result()
+
+download_data()
 ```
-
-### Use `with_options` to customize options on any existing task or flow
-
-
-```python
-from prefect import flow
-from prefect_shell import shell_run_command
-
-custom_shell_run_command = shell_run_command.with_options(
-    name="My custom task name",
-    retries=2,
-    retry_delay_seconds=10,
-)
-
-@flow
-def example_shell_run_command_flow():
-    return custom_shell_run_command(command="echo hello", return_all=True)
-
-example_shell_run_command_flow()
-```
-
-For more tips on how to use tasks and flows in a Collection, check out [Using Collections](https://orion-docs.prefect.io/collections/usage/)!
 
 ## Resources
+
+For more tips on how to use tasks and flows in a Collection, check out [Using Collections](https://orion-docs.prefect.io/collections/usage/)!
 
 ### Installation
 
