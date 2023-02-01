@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   run-tests:
-    name: Run Tests
+    name: Run Windows Tests
     runs-on: windows-latest
     strategy:
       matrix:
