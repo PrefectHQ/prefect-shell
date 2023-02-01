@@ -1,8 +1,8 @@
 # Integrating shell commands into your dataflow with `prefect-shell`
 
 <p align="center">
-    <!--- Insert a cover image here -->
-    <!--- <br> -->
+    <img src="https://user-images.githubusercontent.com/15331990/216169092-20cc6e77-ee3b-4aef-a8e7-02747eb5a549.png">
+    <br>
     <a href="https://pypi.python.org/pypi/prefect-shell/" alt="PyPI version">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-shell?color=0052FF&labelColor=090422"></a>
     <a href="https://github.com/PrefectHQ/prefect-shell/" alt="Stars">
