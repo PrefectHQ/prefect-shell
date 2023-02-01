@@ -52,10 +52,9 @@ def download_data():
     # for long running operations, you can use a context manager
     with ShellOperation(
         commands=[
-            "cd data/${today}",
             "curl -O https://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v3.0.csv",
         ],
-        env={"today": today}
+        working_dir=f"data/{today}",
     ) as download_csv_operation:
 
         # trigger runs the process in the background
@@ -71,6 +70,31 @@ def download_data():
         output_lines = download_csv_process.fetch_result()
 
 download_data()
+```
+
+Outputs:
+```bash
+14:48:16.550 | INFO    | prefect.engine - Created flow run 'tentacled-chachalaca' for flow 'download-data'
+14:48:17.977 | INFO    | Flow run 'tentacled-chachalaca' - PID 19360 triggered with 2 commands running inside the '.' directory.
+14:48:17.987 | INFO    | Flow run 'tentacled-chachalaca' - PID 19360 completed with return code 0.
+14:48:17.994 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 triggered with 1 commands running inside the PosixPath('data/20230201') directory.
+14:48:18.009 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 stream output:
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dl
+14:48:18.010 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 stream output:
+oad  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+14:48:18.840 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 stream output:
+ 11 1630k   11  192k    0     0   229k      0  0:00:07 --:--:--  0:00:07  231k
+14:48:19.839 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 stream output:
+ 83 1630k   83 1368k    0     0   745k      0  0:00:02  0:00:01  0:00:01  747k
+14:48:19.993 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 stream output:
+100 1630k  100 1630k    0     0   819k      0  0
+14:48:19.994 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 stream output:
+:00:01  0:00:01 --:--:--  821k
+14:48:19.996 | INFO    | Flow run 'tentacled-chachalaca' - PID 19363 completed with return code 0.
+14:48:19.998 | INFO    | Flow run 'tentacled-chachalaca' - Successfully closed all open processes.
+14:48:20.203 | INFO    | Flow run 'tentacled-chachalaca' - Finished in state Completed()
 ```
 
 ## Resources
