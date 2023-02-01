@@ -38,35 +38,37 @@ from prefect_shell import ShellOperation
 @flow
 def download_data():
     today = datetime.today().strftime("%Y%m%d")
-    setup_directory = ShellOperation(
+
+    # for short running operations, you can use the `run` method
+    # which automatically manages the context
+    ShellOperation(
         commands=[
             "mkdir -p data",
             "mkdir -p data/${today}"
         ],
-        
         env={"today": today}
-    )
-    # for short running operations, you can use the `run` method
-    setup_directory.run()
+    ).run()
 
-    download_csv_operation = ShellOperation(
+    # for long running operations, you can use a context manager
+    with ShellOperation(
         commands=[
             "cd data/${today}",
             "curl -O https://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v3.0.csv",
         ],
         env={"today": today}
-    )
-    # for long running operations, you can use the `trigger` method
-    download_csv_process = download_csv_operation.trigger()
+    ) as download_csv_operation:
 
-    # then do other things here in the meantime, like downloading another file
-    ...
+        # trigger runs the process in the background
+        download_csv_process = download_csv_operation.trigger()
 
-    # when you're ready, wait for the process to finish
-    download_csv_process.wait_for_completion()
+        # then do other things here in the meantime, like download another file
+        ...
 
-    # if you'd like to get the output lines, you can use the `fetch_result` method
-    return download_csv_process.fetch_result()
+        # when you're ready, wait for the process to finish
+        download_csv_process.wait_for_completion()
+
+        # if you'd like to get the output lines, you can use the `fetch_result` method
+        output_lines = download_csv_process.fetch_result()
 
 download_data()
 ```
