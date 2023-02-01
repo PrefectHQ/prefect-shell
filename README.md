@@ -97,6 +97,33 @@ oad  Upload   Total   Spent    Left  Speed
 14:48:20.203 | INFO    | Flow run 'tentacled-chachalaca' - Finished in state Completed()
 ```
 
+!!! info "Utilize Previously Saved Blocks"
+
+    You can save commands within a `ShellOperation` block, then reuse them across multiple flows, or even plain Python scripts.
+    
+    Save the block with desired commands:
+
+    ```python
+    from prefect_shell import ShellOperation
+
+    ping_op = ShellOperation(commands=["ping -t 1 prefect.io"])
+    ping_op.save("BLOCK_NAME")
+    ```
+
+    Load the saved block:
+
+    ```python
+    from prefect_shell import ShellOperation
+
+    ping_op = ShellOperation.load("BLOCK_NAME")    
+    ```
+
+    To [view and edit the blocks](https://orion-docs.prefect.io/ui/blocks/) on Prefect UI:
+
+    ```bash
+    prefect block register -m prefect_shell
+    ```
+
 ## Resources
 
 For more tips on how to use tasks and flows in a Collection, check out [Using Collections](https://orion-docs.prefect.io/collections/usage/)!
