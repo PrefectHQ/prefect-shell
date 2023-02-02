@@ -220,7 +220,7 @@ class ShellOperation(JobBlock):
         ```python
         from prefect_shell import ShellOperation
 
-        shell_operation = ShellOperation.load("BLOCK_NAME")
+        shell_operation = ShellOperation.load("block-name")
         ```
     """
 
