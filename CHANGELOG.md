@@ -9,19 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `ShellOperation` job block - [#55](https://github.com/PrefectHQ/prefect-shell/pull/55)
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- If using PowerShell, set exit code to that of command - [#51](https://github.com/PrefectHQ/prefect-shell/pull/51)
-
 ### Security
 
+## 0.1.4
+
+Released on February 2nd, 2023.
+
+### Added
+
+- `ShellOperation` job block - [#55](https://github.com/PrefectHQ/prefect-shell/pull/55)
+
+### Fixed
+
+- If using PowerShell, set exit code to that of command - [#51](https://github.com/PrefectHQ/prefect-shell/pull/51)
+
 ## 0.1.3
+
+Released on October 26th, 2022.
 
 ### Added
 
