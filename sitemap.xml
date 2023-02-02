@@ -2,12 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://PrefectHQ.github.io/prefect-shell/</loc>
-         <lastmod>2022-10-26</lastmod>
+         <lastmod>2023-02-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://PrefectHQ.github.io/prefect-shell/blocks_catalog/</loc>
+         <lastmod>2023-02-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://PrefectHQ.github.io/prefect-shell/commands/</loc>
-         <lastmod>2022-10-26</lastmod>
+         <lastmod>2023-02-02</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://PrefectHQ.github.io/prefect-shell/examples_catalog/</loc>
+         <lastmod>2023-02-02</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

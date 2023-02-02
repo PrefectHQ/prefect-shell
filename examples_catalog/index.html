@@ -8,25 +8,27 @@
       
       
       
-        <link rel="canonical" href="https://PrefectHQ.github.io/prefect-shell/">
+        <link rel="canonical" href="https://PrefectHQ.github.io/prefect-shell/examples_catalog/">
       
       
+        <link rel="prev" href="../blocks_catalog/">
       
-        <link rel="next" href="blocks_catalog/">
       
-      <link rel="icon" href="img/favicon.ico">
+        <link rel="next" href="../commands/">
+      
+      <link rel="icon" href="../img/favicon.ico">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.10">
     
     
       
-        <title>prefect-shell</title>
+        <title>Examples Catalog - prefect-shell</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.0d440cfe.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.0d440cfe.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
       
       
 
@@ -42,11 +44,11 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="stylesheets/extra.css">
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -87,7 +89,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#integrating-shell-commands-into-your-dataflow-with-prefect-shell" class="md-skip">
+        <a href="#examples-catalog" class="md-skip">
           Skip to content
         </a>
       
@@ -101,9 +103,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="prefect-shell" class="md-header__button md-logo" aria-label="prefect-shell" data-md-component="logo">
+    <a href=".." title="prefect-shell" class="md-header__button md-logo" aria-label="prefect-shell" data-md-component="logo">
       
-  <img src="img/prefect-logo-mark-solid-white-500.png" alt="logo">
+  <img src="../img/prefect-logo-mark-solid-white-500.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -119,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              Examples Catalog
             
           </span>
         </div>
@@ -226,9 +228,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="prefect-shell" class="md-nav__button md-logo" aria-label="prefect-shell" data-md-component="logo">
+    <a href=".." title="prefect-shell" class="md-nav__button md-logo" aria-label="prefect-shell" data-md-component="logo">
       
-  <img src="img/prefect-logo-mark-solid-white-500.png" alt="logo">
+  <img src="../img/prefect-logo-mark-solid-white-500.png" alt="logo">
 
     </a>
     prefect-shell
@@ -254,6 +256,36 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blocks_catalog/" class="md-nav__link">
+        Blocks Catalog
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -266,12 +298,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Home
+          Examples Catalog
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="." class="md-nav__link md-nav__link--active">
-        Home
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Examples Catalog
       </a>
       
         
@@ -290,56 +322,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    Getting Started
+  <a href="#commands-module" class="md-nav__link">
+    Commands Module
   </a>
-  
-    <nav class="md-nav" aria-label="Getting Started">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#integrate-with-prefect-flows" class="md-nav__link">
-    Integrate with Prefect flows
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resources" class="md-nav__link">
-    Resources
-  </a>
-  
-    <nav class="md-nav" aria-label="Resources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#feedback" class="md-nav__link">
-    Feedback
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    Contributing
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -347,36 +332,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="blocks_catalog/" class="md-nav__link">
-        Blocks Catalog
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="examples_catalog/" class="md-nav__link">
-        Examples Catalog
-      </a>
     </li>
   
 
@@ -416,7 +371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="commands/" class="md-nav__link">
+      <a href="../commands/" class="md-nav__link">
         Commands
       </a>
     </li>
@@ -457,56 +412,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    Getting Started
+  <a href="#commands-module" class="md-nav__link">
+    Commands Module
   </a>
-  
-    <nav class="md-nav" aria-label="Getting Started">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#integrate-with-prefect-flows" class="md-nav__link">
-    Integrate with Prefect flows
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resources" class="md-nav__link">
-    Resources
-  </a>
-  
-    <nav class="md-nav" aria-label="Resources">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    Installation
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#feedback" class="md-nav__link">
-    Feedback
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    Contributing
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -524,147 +432,28 @@
                 
                   
 
-  
-  
 
 
+<h1 id="examples-catalog">Examples Catalog</h1>
+<p>Below is a list of examples for <code>prefect-shell</code>.</p>
+<h2 id="commands-module"><a class="autorefs autorefs-internal" href="../commands/#prefect_shell.commands">Commands Module</a></h2>
+<p>Sleep for 5 seconds and then print "Hello, world!":
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect_shell</span> <span class="kn">import</span> <span class="n">ShellOperation</span>
 
-<h1 id="integrating-shell-commands-into-your-dataflow-with-prefect-shell">Integrating shell commands into your dataflow with <code>prefect-shell</code></h1>
-<p align="center">
-    <img src="https://user-images.githubusercontent.com/15331990/216169092-20cc6e77-ee3b-4aef-a8e7-02747eb5a549.png">
-    <br>
-    <a href="https://pypi.python.org/pypi/prefect-shell/" alt="PyPI version">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-shell?color=0052FF&labelColor=090422"></a>
-    <a href="https://github.com/PrefectHQ/prefect-shell/" alt="Stars">
-        <img src="https://img.shields.io/github/stars/PrefectHQ/prefect-shell?color=0052FF&labelColor=090422" /></a>
-    <a href="https://pepy.tech/badge/prefect-shell/" alt="Downloads">
-        <img src="https://img.shields.io/pypi/dm/prefect-shell?color=0052FF&labelColor=090422" /></a>
-    <a href="https://github.com/PrefectHQ/prefect-shell/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/PrefectHQ/prefect-shell?color=0052FF&labelColor=090422" /></a>
-    <br>
-    <a href="https://prefect-community.slack.com" alt="Slack">
-        <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=0052FF&labelColor=090422&logo=slack" /></a>
-    <a href="https://discourse.prefect.io/" alt="Discourse">
-        <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
-</p>
-
-<p>The prefect-shell collection makes it easy to execute shell commands in your Prefect flows. Check out the examples below to get started!</p>
-<h2 id="getting-started">Getting Started</h2>
-<h3 id="integrate-with-prefect-flows">Integrate with Prefect flows</h3>
-<p>With prefect-shell, you can bring your trusty shell commands (and/or scripts) straight into the Prefect flow party, complete with awesome Prefect logging.</p>
-<p>No more separate logs, just seamless integration. Let's get the shell-abration started!</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect</span> <span class="kn">import</span> <span class="n">flow</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">prefect_shell</span> <span class="kn">import</span> <span class="n">ShellOperation</span>
-
-<span class="nd">@flow</span>
-<span class="k">def</span> <span class="nf">download_data</span><span class="p">():</span>
-    <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="c1"># for short running operations, you can use the `run` method</span>
-    <span class="c1"># which automatically manages the context</span>
-    <span class="n">ShellOperation</span><span class="p">(</span>
-        <span class="n">commands</span><span class="o">=</span><span class="p">[</span>
-            <span class="s2">&quot;mkdir -p data&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;mkdir -p data/$</span><span class="si">{today}</span><span class="s2">&quot;</span>
-        <span class="p">],</span>
-        <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;today&quot;</span><span class="p">:</span> <span class="n">today</span><span class="p">}</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-
-    <span class="c1"># for long running operations, you can use a context manager</span>
-    <span class="k">with</span> <span class="n">ShellOperation</span><span class="p">(</span>
-        <span class="n">commands</span><span class="o">=</span><span class="p">[</span>
-            <span class="s2">&quot;curl -O https://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v3.0.csv&quot;</span><span class="p">,</span>
-        <span class="p">],</span>
-        <span class="n">working_dir</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;data/</span><span class="si">{</span><span class="n">today</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-    <span class="p">)</span> <span class="k">as</span> <span class="n">download_csv_operation</span><span class="p">:</span>
-
-        <span class="c1"># trigger runs the process in the background</span>
-        <span class="n">download_csv_process</span> <span class="o">=</span> <span class="n">download_csv_operation</span><span class="o">.</span><span class="n">trigger</span><span class="p">()</span>
-
-        <span class="c1"># then do other things here in the meantime, like download another file</span>
-        <span class="o">...</span>
-
-        <span class="c1"># when you&#39;re ready, wait for the process to finish</span>
-        <span class="n">download_csv_process</span><span class="o">.</span><span class="n">wait_for_completion</span><span class="p">()</span>
-
-        <span class="c1"># if you&#39;d like to get the output lines, you can use the `fetch_result` method</span>
-        <span class="n">output_lines</span> <span class="o">=</span> <span class="n">download_csv_process</span><span class="o">.</span><span class="n">fetch_result</span><span class="p">()</span>
-
-<span class="n">download_data</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">ShellOperation</span><span class="p">(</span>
+    <span class="n">commands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sleep 5&quot;</span><span class="p">,</span> <span class="s2">&quot;echo &#39;Hello, world!&#39;&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">shell_operation</span><span class="p">:</span>
+    <span class="n">shell_process</span> <span class="o">=</span> <span class="n">shell_operation</span><span class="o">.</span><span class="n">trigger</span><span class="p">()</span>
+    <span class="n">shell_process</span><span class="o">.</span><span class="n">wait_for_completion</span><span class="p">()</span>
+    <span class="n">shell_output</span> <span class="o">=</span> <span class="n">shell_process</span><span class="o">.</span><span class="n">fetch_result</span><span class="p">()</span>
 </code></pre></div>
-<p>Outputs:
-<div class="highlight"><pre><span></span><code><span class="m">14</span>:48:16.550<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>prefect.engine<span class="w"> </span>-<span class="w"> </span>Created<span class="w"> </span>flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>flow<span class="w"> </span><span class="s1">&#39;download-data&#39;</span>
-<span class="m">14</span>:48:17.977<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19360</span><span class="w"> </span>triggered<span class="w"> </span>with<span class="w"> </span><span class="m">2</span><span class="w"> </span>commands<span class="w"> </span>running<span class="w"> </span>inside<span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;.&#39;</span><span class="w"> </span>directory.
-<span class="m">14</span>:48:17.987<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19360</span><span class="w"> </span>completed<span class="w"> </span>with<span class="w"> </span><span class="k">return</span><span class="w"> </span>code<span class="w"> </span><span class="m">0</span>.
-<span class="m">14</span>:48:17.994<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>triggered<span class="w"> </span>with<span class="w"> </span><span class="m">1</span><span class="w"> </span>commands<span class="w"> </span>running<span class="w"> </span>inside<span class="w"> </span>the<span class="w"> </span>PosixPath<span class="o">(</span><span class="s1">&#39;data/20230201&#39;</span><span class="o">)</span><span class="w"> </span>directory.
-<span class="m">14</span>:48:18.009<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>stream<span class="w"> </span>output:
-<span class="w">  </span>%<span class="w"> </span>Total<span class="w">    </span>%<span class="w"> </span>Received<span class="w"> </span>%<span class="w"> </span>Xferd<span class="w">  </span>Average<span class="w"> </span>Speed<span class="w">   </span>Time<span class="w">    </span>Time<span class="w">     </span>Time<span class="w">  </span>Current
-<span class="w">                                 </span>Dl
-<span class="m">14</span>:48:18.010<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>stream<span class="w"> </span>output:
-oad<span class="w">  </span>Upload<span class="w">   </span>Total<span class="w">   </span>Spent<span class="w">    </span>Left<span class="w">  </span>Speed
-<span class="w">  </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">    </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">    </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="m">0</span><span class="w"> </span>--:--:--<span class="w"> </span>--:--:--<span class="w"> </span>--:--:--<span class="w">     </span><span class="m">0</span>
-<span class="m">14</span>:48:18.840<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>stream<span class="w"> </span>output:
-<span class="w"> </span><span class="m">11</span><span class="w"> </span>1630k<span class="w">   </span><span class="m">11</span><span class="w">  </span>192k<span class="w">    </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">   </span>229k<span class="w">      </span><span class="m">0</span><span class="w">  </span><span class="m">0</span>:00:07<span class="w"> </span>--:--:--<span class="w">  </span><span class="m">0</span>:00:07<span class="w">  </span>231k
-<span class="m">14</span>:48:19.839<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>stream<span class="w"> </span>output:
-<span class="w"> </span><span class="m">83</span><span class="w"> </span>1630k<span class="w">   </span><span class="m">83</span><span class="w"> </span>1368k<span class="w">    </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">   </span>745k<span class="w">      </span><span class="m">0</span><span class="w">  </span><span class="m">0</span>:00:02<span class="w">  </span><span class="m">0</span>:00:01<span class="w">  </span><span class="m">0</span>:00:01<span class="w">  </span>747k
-<span class="m">14</span>:48:19.993<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>stream<span class="w"> </span>output:
-<span class="m">100</span><span class="w"> </span>1630k<span class="w">  </span><span class="m">100</span><span class="w"> </span>1630k<span class="w">    </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">   </span>819k<span class="w">      </span><span class="m">0</span><span class="w">  </span><span class="m">0</span>
-<span class="m">14</span>:48:19.994<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>stream<span class="w"> </span>output:
-:00:01<span class="w">  </span><span class="m">0</span>:00:01<span class="w"> </span>--:--:--<span class="w">  </span>821k
-<span class="m">14</span>:48:19.996<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>PID<span class="w"> </span><span class="m">19363</span><span class="w"> </span>completed<span class="w"> </span>with<span class="w"> </span><span class="k">return</span><span class="w"> </span>code<span class="w"> </span><span class="m">0</span>.
-<span class="m">14</span>:48:19.998<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>Successfully<span class="w"> </span>closed<span class="w"> </span>all<span class="w"> </span>open<span class="w"> </span>processes.
-<span class="m">14</span>:48:20.203<span class="w"> </span><span class="p">|</span><span class="w"> </span>INFO<span class="w">    </span><span class="p">|</span><span class="w"> </span>Flow<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;tentacled-chachalaca&#39;</span><span class="w"> </span>-<span class="w"> </span>Finished<span class="w"> </span><span class="k">in</span><span class="w"> </span>state<span class="w"> </span>Completed<span class="o">()</span>
+Sleep for 5 seconds and then print "Hello, world!":
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect_shell</span> <span class="kn">import</span> <span class="n">ShellOperation</span>
+
+<span class="n">shell_output</span> <span class="o">=</span> <span class="n">ShellOperation</span><span class="p">(</span>
+    <span class="n">commands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sleep 5&quot;</span><span class="p">,</span> <span class="s2">&quot;echo &#39;Hello, world!&#39;&quot;</span><span class="p">]</span>
+<span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </code></pre></div></p>
-<div class="admonition info">
-<p class="admonition-title">Utilize Previously Saved Blocks</p>
-<p>You can save commands within a <code>ShellOperation</code> block, then reuse them across multiple flows, or even plain Python scripts.</p>
-<p>Save the block with desired commands:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect_shell</span> <span class="kn">import</span> <span class="n">ShellOperation</span>
-
-<span class="n">ping_op</span> <span class="o">=</span> <span class="n">ShellOperation</span><span class="p">(</span><span class="n">commands</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ping -t 1 prefect.io&quot;</span><span class="p">])</span>
-<span class="n">ping_op</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;BLOCK_NAME&quot;</span><span class="p">)</span>
-</code></pre></div>
-<p>Load the saved block:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">prefect_shell</span> <span class="kn">import</span> <span class="n">ShellOperation</span>
-
-<span class="n">ping_op</span> <span class="o">=</span> <span class="n">ShellOperation</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;BLOCK_NAME&quot;</span><span class="p">)</span>    
-</code></pre></div>
-<p>To <a href="https://orion-docs.prefect.io/ui/blocks/">view and edit the blocks</a> on Prefect UI:</p>
-<div class="highlight"><pre><span></span><code>prefect<span class="w"> </span>block<span class="w"> </span>register<span class="w"> </span>-m<span class="w"> </span>prefect_shell
-</code></pre></div>
-</div>
-<h2 id="resources">Resources</h2>
-<p>For more tips on how to use tasks and flows in a Collection, check out <a href="https://orion-docs.prefect.io/collections/usage/">Using Collections</a>!</p>
-<h3 id="installation">Installation</h3>
-<p>Install <code>prefect-shell</code> with <code>pip</code>:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>prefect-shell
-</code></pre></div>
-<p>A list of available blocks in <code>prefect-shell</code> and their setup instructions can be found <a href="https://PrefectHQ.github.io/prefect-shell/blocks-catalog">here</a>.</p>
-<p>Requires an installation of Python 3.7+.</p>
-<p>We recommend using a Python virtual environment manager such as pipenv, conda or virtualenv.</p>
-<p>These tasks are designed to work with Prefect 2. For more information about how to use Prefect, please refer to the <a href="https://orion-docs.prefect.io/">Prefect documentation</a>.</p>
-<h3 id="feedback">Feedback</h3>
-<p>If you encounter any bugs while using <code>prefect-shell</code>, feel free to open an issue in the <a href="https://github.com/PrefectHQ/prefect-shell">prefect-shell</a> repository.</p>
-<p>If you have any questions or issues while using <code>prefect-shell</code>, you can find help in either the <a href="https://discourse.prefect.io/">Prefect Discourse forum</a> or the <a href="https://prefect.io/slack">Prefect Slack community</a>.</p>
-<p>Feel free to star or watch <a href="https://github.com/PrefectHQ/prefect-shell"><code>prefect-shell</code></a> for updates too!</p>
-<h3 id="contributing">Contributing</h3>
-<p>If you'd like to help contribute to fix an issue or add a feature to <code>prefect-shell</code>, please <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork">propose changes through a pull request from a fork of the repository</a>.</p>
-<p>Here are the steps:</p>
-<ol>
-<li><a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo#forking-a-repository">Fork the repository</a></li>
-<li><a href="https://docs.github.com/en/get-started/quickstart/fork-a-repo#cloning-your-forked-repository">Clone the forked repository</a></li>
-<li>Install the repository and its dependencies:
-<div class="highlight"><pre><span></span><code>pip install -e &quot;.[dev]&quot;
-</code></pre></div></li>
-<li>Make desired changes</li>
-<li>Add tests</li>
-<li>Insert an entry to <a href="https://github.com/PrefectHQ/prefect-shell/blob/main/CHANGELOG.md">CHANGELOG.md</a></li>
-<li>Install <code>pre-commit</code> to perform quality checks prior to commit:
-<div class="highlight"><pre><span></span><code>pre-commit install
-</code></pre></div></li>
-<li><code>git commit</code>, <code>git push</code>, and create a pull request</li>
-</ol>
 
 
   
@@ -789,10 +578,10 @@ oad<span class="w">  </span>Upload<span class="w">   </span>Total<span class="w"
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["content.code.copy", "content.code.annotate"], "search": "assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.6df46069.min.js"></script>
+      <script src="../assets/javascripts/bundle.6df46069.min.js"></script>
       
     
   </body>
