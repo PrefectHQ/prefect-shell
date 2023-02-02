@@ -39,7 +39,7 @@ def skip_block_load_code_example(code_example: str) -> bool:
     """
     Skips the code example if it's just showing how to load a Block.
     """
-    return re.search(r'\.load\("block-name"\)\s*$', code_example.rstrip("`"))
+    return re.search(r'\.load\("BLOCK_NAME"\)\s*$', code_example.rstrip("`"))
 
 
 def get_code_examples(obj: Union[ModuleType, Callable]) -> Set[str]:
