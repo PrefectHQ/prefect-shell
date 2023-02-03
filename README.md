@@ -136,7 +136,7 @@ Install `prefect-shell` with `pip`:
 pip install -U prefect-shell
 ```
 
-A list of available blocks in `prefect-shell` and their setup instructions can be found [here](https://PrefectHQ.github.io/prefect-shell/blocks-catalog).
+A list of available blocks in `prefect-shell` and their setup instructions can be found [here](https://PrefectHQ.github.io/prefect-shell/blocks_catalog).
 
 Requires an installation of Python 3.7+.
 
