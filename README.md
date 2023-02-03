@@ -107,7 +107,7 @@ oad  Upload   Total   Spent    Left  Speed
     from prefect_shell import ShellOperation
 
     ping_op = ShellOperation(commands=["ping -t 1 prefect.io"])
-    ping_op.save("BLOCK_NAME")
+    ping_op.save("block-name")
     ```
 
     Load the saved block:
@@ -115,7 +115,7 @@ oad  Upload   Total   Spent    Left  Speed
     ```python
     from prefect_shell import ShellOperation
 
-    ping_op = ShellOperation.load("BLOCK_NAME")    
+    ping_op = ShellOperation.load("block-name")
     ```
 
     To [view and edit the blocks](https://orion-docs.prefect.io/ui/blocks/) on Prefect UI:
