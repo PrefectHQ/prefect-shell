@@ -82,7 +82,7 @@ def insert_blocks_catalog(generated_file):
 
                     @flow
                     def my_flow():
-                        my_block = {block_name}.load("MY_BLOCK_NAME")
+                        my_block = {block_name}.load("block-name")
 
                     my_flow()
                     ```
