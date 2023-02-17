@@ -283,7 +283,6 @@ class ShellOperation(JobBlock):
             f"{temp_file.name!r}:{os.linesep}{joined_commands}"
         )
         temp_file.write(joined_commands.encode())
-        temp_file.flush()
 
         if self.shell is None and sys.platform == "win32" or extension == ".ps1":
             shell = "powershell"
@@ -295,6 +294,7 @@ class ShellOperation(JobBlock):
         if shell == "powershell":
             # if powershell, set exit code to that of command
             temp_file.write("\r\nExit $LastExitCode".encode())
+        temp_file.flush()
 
         trigger_command = [shell, temp_file.name]
         input_env = os.environ.copy()
