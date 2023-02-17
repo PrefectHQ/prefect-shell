@@ -308,7 +308,6 @@ class ShellOperation(JobBlock):
         Helper method to compile the kwargs for `open_process` so it's not repeated
         across the run and trigger methods.
         """
-
         trigger_command = self._exit_stack.enter_context(self._write_trigger_command())
         input_env = os.environ.copy()
         input_env.update(self.env)
