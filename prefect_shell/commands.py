@@ -272,8 +272,7 @@ class ShellOperation(JobBlock):
         extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
         temp_file = self._exit_stack.enter_context(
             tempfile.NamedTemporaryFile(
-                prefix="prefect-",
-                suffix=extension,
+                prefix="prefect-", suffix=extension, delete=False
             )
         )
 
