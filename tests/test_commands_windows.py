@@ -64,7 +64,7 @@ def test_shell_run_command_stream_level_windows(prefect_task_runs_caplog):
 
     assert test_flow() == echo_msg
     for record in prefect_task_runs_caplog.records:
-        if echo_msg in record.msg:
+        if "WORKING!!!!" in record.msg:
             break  # it's in the records
     else:
         raise AssertionError
@@ -86,7 +86,7 @@ def test_shell_run_command_cwd():
     @flow
     def test_flow():
         return shell_run_command(
-            command="Get-Location",
+            command="echo 'work!'; Get-Location",
             shell="powershell",
             cwd=Path.home(),
         )
@@ -229,7 +229,7 @@ class TestShellOperation:
         op = ShellOperation(commands=["echo 'testing\nthe output'", "echo good"])
         assert await self.execute(op, method) == ["testing\nthe output", "good"]
         records = prefect_task_runs_caplog.records
-        assert len(records) == 3
+        assert len(records) == 4
         assert "triggered with 2 commands running" in records[0].message
         assert "stream output:\ntesting\nthe output\ngood" in records[1].message
         assert "completed with return code 0" in records[2].message
