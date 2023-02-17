@@ -77,6 +77,7 @@ def test_shell_run_command_helper_command_windows():
             command="Get-Location",
             helper_command="cd $env:USERPROFILE",
             shell="powershell",
+            return_all=True,
         )
 
     assert test_flow() == os.path.expandvars("$USERPROFILE")
@@ -138,7 +139,7 @@ def test_shell_run_command_update_current_env_windows():
         )
 
     result = test_flow()
-    assert os.environ["USERPROFILE"] in result
+    assert os.environ["USERPROFILE"] in " ".join(result)
     assert "test value" in result
 
 
@@ -228,7 +229,7 @@ class TestShellOperation:
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_output(self, prefect_task_runs_caplog, method):
         op = ShellOperation(commands=["echo 'testing'"])
-        assert await self.execute(op, method) == ["testing", "good"]
+        assert await self.execute(op, method) == ["testing"]
         records = prefect_task_runs_caplog.records
         assert len(records) == 3
         assert "triggered with 2 commands running" in records[0].message
