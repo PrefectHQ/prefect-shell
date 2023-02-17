@@ -6,8 +6,8 @@ import os
 import subprocess
 import sys
 import tempfile
-from contextlib import AsyncExitStack
-from typing import Any, Dict, List, Optional, Union
+from contextlib import AsyncExitStack, contextmanager
+from typing import Any, Dict, Generator, List, Optional, Union
 
 import anyio
 from anyio.abc import Process
@@ -264,39 +264,52 @@ class ShellOperation(JobBlock):
         default_factory=AsyncExitStack,
     )
 
+    @contextmanager
+    def _prep_trigger_command(self) -> Generator[str, None, None]:
+        """
+        Write the commands to a temporary file, handling all the details of
+        creating the file and cleaning it up afterwards. Then, return the command
+        to run the temporary file.
+        """
+        try:
+            extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
+            temp_file = tempfile.NamedTemporaryFile(
+                prefix="prefect-",
+                suffix=extension,
+                delete=False,
+            )
+
+            joined_commands = os.linesep.join(self.commands)
+            self.logger.debug(
+                f"Writing the following commands to "
+                f"{temp_file.name!r}:{os.linesep}{joined_commands}"
+            )
+            temp_file.write(joined_commands.encode())
+
+            if self.shell is None and sys.platform == "win32" or extension == ".ps1":
+                shell = "powershell"
+            elif self.shell is None:
+                shell = "bash"
+            else:
+                shell = self.shell.lower()
+
+            if shell == "powershell":
+                # if powershell, set exit code to that of command
+                temp_file.write("\r\nExit $LastExitCode".encode())
+            temp_file.close()
+
+            trigger_command = [shell, temp_file.name]
+            yield trigger_command
+        finally:
+            if os.path.exists(temp_file.name):
+                os.remove(temp_file.name)
+
     def _compile_kwargs(self, **open_kwargs: Dict[str, Any]) -> Dict[str, Any]:
         """
         Helper method to compile the kwargs for `open_process` so it's not repeated
         across the run and trigger methods.
         """
-        extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
-        temp_file = self._exit_stack.enter_context(
-            tempfile.NamedTemporaryFile(
-                prefix="prefect-",
-                suffix=extension,
-            )
-        )
-
-        joined_commands = os.linesep.join(self.commands)
-        self.logger.debug(
-            f"Writing the following commands to "
-            f"{temp_file.name!r}:{os.linesep}{joined_commands}"
-        )
-        temp_file.write(joined_commands.encode())
-        temp_file.flush()
-
-        if self.shell is None and sys.platform == "win32" or extension == ".ps1":
-            shell = "powershell"
-        elif self.shell is None:
-            shell = "bash"
-        else:
-            shell = self.shell.lower()
-
-        if shell == "powershell":
-            # if powershell, set exit code to that of command
-            temp_file.write("\r\nExit $LastExitCode".encode())
-
-        trigger_command = [shell, temp_file.name]
+        trigger_command = self._exit_stack.enter_context(self._prep_trigger_command())
         input_env = os.environ.copy()
         input_env.update(self.env)
         input_open_kwargs = dict(

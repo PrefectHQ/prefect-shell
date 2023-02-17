@@ -24,6 +24,9 @@ Released on February 17, 2023.
 ### Changed
 - Change the behavior of the `ShellOperation` `stream_output` parameter. Setting it to `False` will now only turn off the logging and not send `stdout` and `stderr` to `DEVNULL`. The previous behavior can be achieved by manually setting `stdout`/`stderr` to `DEVNULL` through the `open_kwargs` arguments. - [#67](https://github.com/PrefectHQ/prefect-shell/issues/67)
 
+### Fixed
+- Using `ShellOperation` on Windows - [#70](https://github.com/PrefectHQ/prefect-shell/issues/70)
+
 ## 0.1.4
 
 Released on February 2nd, 2023.
