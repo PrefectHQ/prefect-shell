@@ -155,7 +155,7 @@ class ShellProcess(JobRun):
         Capture output from source.
         """
         async for output in TextReceiveStream(source):
-            text = output.rstrip(os.linesep)
+            text = output.rstrip()
             if self._shell_operation.stream_output:
                 self.logger.info(f"PID {self.pid} stream output:{os.linesep}{text}")
             self._output.extend(text.split(os.linesep))

@@ -34,7 +34,7 @@ def test_shell_run_command_windows(prefect_task_runs_caplog):
         msg = shell_run_command(
             command=f"echo {echo_msg}", return_all=True, shell="powershell"
         )
-        return " ".join(word.replace("\r", "") for word in msg)
+        return msg
 
     print(prefect_task_runs_caplog.text)
 
@@ -58,7 +58,7 @@ def test_shell_run_command_stream_level_windows(prefect_task_runs_caplog):
             return_all=True,
             shell="powershell",
         )
-        return " ".join(word.replace("\r", "") for word in msg)
+        return msg
 
     print(prefect_task_runs_caplog.text)
 
@@ -216,7 +216,7 @@ class TestShellOperation:
 
     def test_echo(self):
         op = ShellOperation(commands=["echo Hello"])
-        assert op.run() == ["Hello"]
+        assert op.run() == ["Hello", ""]
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_error(self, method):
@@ -237,14 +237,14 @@ class TestShellOperation:
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_current_env(self, method):
         op = ShellOperation(commands=["echo $env:USERPROFILE"])
-        assert await self.execute(op, method) == [os.environ["USERPROFILE"]]
+        assert await self.execute(op, method) == [os.environ["USERPROFILE"], ""]
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_updated_env(self, method):
         op = ShellOperation(
             commands=["echo $env:TEST_VAR"], env={"TEST_VAR": "test value"}
         )
-        assert await self.execute(op, method) == ["test value"]
+        assert await self.execute(op, method) == ["test value", ""]
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_cwd(self, method):
@@ -255,10 +255,10 @@ class TestShellOperation:
         async with ShellOperation(commands=["echo 'testing'"]) as op:
             proc = await op.trigger()
             await proc.wait_for_completion()
-            await proc.fetch_result() == ["testing"]
+            await proc.fetch_result() == ["testing", ""]
 
     def test_async_context_manager(self):
         with ShellOperation(commands=["echo 'testing'"]) as op:
             proc = op.trigger()
             proc.wait_for_completion()
-            proc.fetch_result() == ["testing"]
+            proc.fetch_result() == ["testing", ""]
