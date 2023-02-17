@@ -213,6 +213,10 @@ class TestShellOperation:
             proc = await op.trigger()
             await proc.wait_for_completion()
             return await proc.fetch_result()
+        
+    def test_echo(self):
+        op = ShellOperation(commands=["echo Hello"])
+        assert op.run() == "Hello"
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_error(self, method):
