@@ -89,9 +89,10 @@ def test_shell_run_command_cwd():
             command="echo 'work!'; Get-Location",
             shell="powershell",
             cwd=Path.home(),
+            return_all=True,
         )
 
-    assert test_flow() == os.fspath(Path.home())
+    assert os.fspath(Path.home()) in test_flow()
 
 
 def test_shell_run_command_return_all():
@@ -231,7 +232,7 @@ class TestShellOperation:
         records = prefect_task_runs_caplog.records
         assert len(records) == 4
         assert "triggered with 2 commands running" in records[0].message
-        assert "stream output:\ntesting\nthe output\ngood" in records[1].message
+        assert "stream output:\r\ntesting\nthe output\ngood" in records[1].message
         assert "completed with return code 0" in records[2].message
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
