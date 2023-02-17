@@ -7,7 +7,7 @@ import subprocess
 import sys
 import tempfile
 from contextlib import AsyncExitStack, contextmanager
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Generator, List, Optional, Union
 
 import anyio
 from anyio.abc import Process
@@ -265,10 +265,11 @@ class ShellOperation(JobBlock):
     )
 
     @contextmanager
-    def _write_trigger_command(self):
+    def _prep_trigger_command(self) -> Generator[str, None, None]:
         """
-        Write the trigger command to a temporary file, handling all the details of
-        creating the file and cleaning it up afterwards.
+        Write the commands to a temporary file, handling all the details of
+        creating the file and cleaning it up afterwards. Then, return the command
+        to run the temporary file.
         """
         try:
             extension = self.extension or (".ps1" if sys.platform == "win32" else ".sh")
@@ -308,7 +309,7 @@ class ShellOperation(JobBlock):
         Helper method to compile the kwargs for `open_process` so it's not repeated
         across the run and trigger methods.
         """
-        trigger_command = self._exit_stack.enter_context(self._write_trigger_command())
+        trigger_command = self._exit_stack.enter_context(self._prep_trigger_command())
         input_env = os.environ.copy()
         input_env.update(self.env)
         input_open_kwargs = dict(
