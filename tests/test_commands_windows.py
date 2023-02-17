@@ -234,7 +234,7 @@ class TestShellOperation:
         assert len(records) == 3
         assert "triggered with 1 commands running" in records[0].message
         assert "testing" in records[1].message
-        assert "completed with return code 0" in records[3].message
+        assert "completed with return code 0" in records[2].message
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_current_env(self, method):
