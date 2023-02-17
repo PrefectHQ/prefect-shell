@@ -164,6 +164,19 @@ class TestShellOperation:
         assert "completed with return code 0" in records[2].message
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
+    async def test_stream_output(self, prefect_task_runs_caplog, method):
+        # If stream_output is False, there should be output,
+        # but no logs from the shell process
+        op = ShellOperation(
+            commands=["echo 'testing\nthe output'", "echo good"], stream_output=False
+        )
+        assert await self.execute(op, method) == ["testing", "the output", "good"]
+        records = prefect_task_runs_caplog.records
+        assert len(records) == 2
+        assert "triggered with 2 commands running" in records[0].message
+        assert "completed with return code 0" in records[1].message
+
+    @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_current_env(self, method):
         op = ShellOperation(commands=["echo $HOME"])
         assert await self.execute(op, method) == [os.environ["HOME"]]
