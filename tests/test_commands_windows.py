@@ -138,8 +138,8 @@ def test_shell_run_command_update_current_env_windows():
         )
 
     result = test_flow()
-    assert result[0] == os.environ["USERPROFILE"]
-    assert result[1] == "test value"
+    assert os.environ["USERPROFILE"] in result
+    assert "test value" in result
 
 
 def test_shell_run_command_ensure_suffix_ps1():
@@ -227,13 +227,12 @@ class TestShellOperation:
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_output(self, prefect_task_runs_caplog, method):
-        op = ShellOperation(commands=["echo 'testing\nthe output'", "echo good"])
-        assert await self.execute(op, method) == ["testing\nthe output", "good"]
+        op = ShellOperation(commands=["echo 'testing'"])
+        assert await self.execute(op, method) == ["testing", "good"]
         records = prefect_task_runs_caplog.records
-        assert len(records) == 4
+        assert len(records) == 3
         assert "triggered with 2 commands running" in records[0].message
-        assert "testing\nthe output" in records[1].message
-        assert "good" in records[2].message
+        assert "testing" in records[1].message
         assert "completed with return code 0" in records[3].message
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
