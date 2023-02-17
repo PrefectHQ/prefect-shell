@@ -314,8 +314,8 @@ class ShellOperation(JobBlock):
         input_env.update(self.env)
         input_open_kwargs = dict(
             command=trigger_command,
-            stdout=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
-            stderr=subprocess.PIPE if self.stream_output else subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             env=input_env,
             cwd=self.working_dir,
             **open_kwargs,
