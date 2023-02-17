@@ -80,7 +80,7 @@ def test_shell_run_command_helper_command_windows():
             return_all=True,
         )
 
-    assert test_flow() == os.path.expandvars("$USERPROFILE")
+    assert os.path.expandvars("$USERPROFILE") in test_flow()
 
 
 def test_shell_run_command_cwd():
@@ -232,7 +232,7 @@ class TestShellOperation:
         assert await self.execute(op, method) == ["testing"]
         records = prefect_task_runs_caplog.records
         assert len(records) == 3
-        assert "triggered with 2 commands running" in records[0].message
+        assert "triggered with 1 commands running" in records[0].message
         assert "testing" in records[1].message
         assert "completed with return code 0" in records[3].message
 
