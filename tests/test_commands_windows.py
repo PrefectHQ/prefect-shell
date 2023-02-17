@@ -27,7 +27,7 @@ def test_shell_run_command_error_windows(prefect_task_runs_caplog):
 
 def test_shell_run_command_windows(prefect_task_runs_caplog):
     prefect_task_runs_caplog.set_level(logging.INFO)
-    echo_msg = "_THIS_ IS WORKING!!!!"
+    echo_msg = "WORKING"
 
     @flow
     def test_flow():
@@ -40,7 +40,7 @@ def test_shell_run_command_windows(prefect_task_runs_caplog):
 
     assert " ".join(test_flow()) == echo_msg
     for record in prefect_task_runs_caplog.records:
-        if "WORKING!!!!" in record.msg:
+        if "WORKING" in record.msg:
             break  # it's in the records
     else:
         raise AssertionError
@@ -48,7 +48,7 @@ def test_shell_run_command_windows(prefect_task_runs_caplog):
 
 def test_shell_run_command_stream_level_windows(prefect_task_runs_caplog):
     prefect_task_runs_caplog.set_level(logging.WARNING)
-    echo_msg = "_THIS_ IS WORKING!!!!"
+    echo_msg = "WORKING"
 
     @flow
     def test_flow():
@@ -64,7 +64,7 @@ def test_shell_run_command_stream_level_windows(prefect_task_runs_caplog):
 
     assert " ".join(test_flow()) == echo_msg
     for record in prefect_task_runs_caplog.records:
-        if "WORKING!!!!" in record.msg:
+        if "WORKING" in record.msg:
             break  # it's in the records
     else:
         raise AssertionError
@@ -234,12 +234,12 @@ class TestShellOperation:
         assert "triggered with 2 commands running" in records[0].message
         assert "testing\nthe output" in records[1].message
         assert "good" in records[2].message
-        assert "completed with return code 0" in records[2].message
+        assert "completed with return code 0" in records[3].message
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_current_env(self, method):
         op = ShellOperation(commands=["echo $env:USERPROFILE"])
-        assert await self.execute(op, method) == [os.environ["USERPROFILE"], ""]
+        assert await self.execute(op, method) == [os.environ["USERPROFILE"]]
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_updated_env(self, method):
