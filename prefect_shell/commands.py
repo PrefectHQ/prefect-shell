@@ -141,6 +141,16 @@ class ShellProcess(JobRun):
         return self._process.pid
 
     @property
+    def pid_logger(self) -> logging.Logger:
+        """
+        The child logger for the process.
+
+        Returns:
+            The child logger for the process with the PID as the name.
+        """
+        return self.logger.getChild(str(self.pid))
+
+    @property
     def return_code(self) -> Optional[int]:
         """
         The return code of the process.
@@ -157,7 +167,7 @@ class ShellProcess(JobRun):
         async for output in TextReceiveStream(source):
             text = output.rstrip()
             if self._shell_operation.stream_output:
-                self.logger.info(f"PID {self.pid} stream output:{os.linesep}{text}")
+                self.pid_logger.info(text)
             self._output.extend(text.split(os.linesep))
 
     @sync_compatible
@@ -165,8 +175,7 @@ class ShellProcess(JobRun):
         """
         Wait for the shell command to complete after a process is triggered.
         """
-        self.logger.debug(f"Waiting for PID {self.pid} to complete.")
-
+        self.pid_logger.debug("Waiting commands to finish running.")
         await asyncio.gather(
             self._capture_output(self._process.stdout),
             self._capture_output(self._process.stderr),
@@ -177,8 +186,8 @@ class ShellProcess(JobRun):
             raise RuntimeError(
                 f"PID {self.pid} failed with return code {self.return_code}."
             )
-        self.logger.info(
-            f"PID {self.pid} completed with return code {self.return_code}."
+        self.pid_logger.info(
+            f"Command execution completed with return code {self.return_code}."
         )
 
     @sync_compatible
@@ -354,8 +363,9 @@ class ShellOperation(JobBlock):
             open_process(**input_open_kwargs)
         )
         num_commands = len(self.commands)
-        self.logger.info(
-            f"PID {process.pid} triggered with {num_commands} commands running "
+        pid_logger = self.logger.getChild(str(process.pid))
+        pid_logger.info(
+            f"Triggered {num_commands} commands running "
             f"inside the {(self.working_dir or '.')!r} directory."
         )
         return ShellProcess(shell_operation=self, process=process)
@@ -389,8 +399,9 @@ class ShellOperation(JobBlock):
         async with open_process(**input_open_kwargs) as process:
             shell_process = ShellProcess(shell_operation=self, process=process)
             num_commands = len(self.commands)
-            self.logger.info(
-                f"PID {process.pid} triggered with {num_commands} commands running "
+            pid_logger = self.logger.getChild(str(process.pid))
+            pid_logger.info(
+                f"Triggered {num_commands} commands running "
                 f"inside the {(self.working_dir or '.')!r} directory."
             )
             await shell_process.wait_for_completion()

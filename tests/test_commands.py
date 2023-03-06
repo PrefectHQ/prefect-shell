@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -159,9 +160,10 @@ class TestShellOperation:
         assert await self.execute(op, method) == ["testing", "the output", "good"]
         records = prefect_task_runs_caplog.records
         assert len(records) == 3
-        assert "triggered with 2 commands running" in records[0].message
-        assert "stream output:\ntesting\nthe output\ngood" in records[1].message
+        assert "Triggered 2 commands running" in records[0].message
+        assert "testing\nthe output\ngood" in records[1].message
         assert "completed with return code 0" in records[2].message
+        assert all([re.match(r"prefect\.Shell\w+.\d+", r.name) for r in records])
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_stream_output(self, prefect_task_runs_caplog, method):
@@ -173,8 +175,9 @@ class TestShellOperation:
         assert await self.execute(op, method) == ["testing", "the output", "good"]
         records = prefect_task_runs_caplog.records
         assert len(records) == 2
-        assert "triggered with 2 commands running" in records[0].message
+        assert "Triggered 2 commands running" in records[0].message
         assert "completed with return code 0" in records[1].message
+        assert all([re.match(r"prefect\.Shell\w+.\d+", r.name) for r in records])
 
     @pytest.mark.parametrize("method", ["run", "trigger"])
     async def test_current_env(self, method):
