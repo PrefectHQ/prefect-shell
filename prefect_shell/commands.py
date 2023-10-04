@@ -17,7 +17,12 @@ from prefect.blocks.abstract import JobBlock, JobRun
 from prefect.logging import get_run_logger
 from prefect.utilities.asyncutils import sync_compatible
 from prefect.utilities.processutils import open_process
-from pydantic import DirectoryPath, Field, PrivateAttr
+from pydantic import VERSION as PYDANTIC_VERSION
+
+if PYDANTIC_VERSION.startswith("2."):
+    from pydantic.v1 import DirectoryPath, Field, PrivateAttr
+else:
+    from pydantic import DirectoryPath, Field, PrivateAttr
 
 
 @task
