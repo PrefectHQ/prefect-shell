@@ -230,7 +230,7 @@ class ShellOperation(JobBlock):
     """
 
     _block_type_name = "Shell Operation"
-    _logo_url = "https://images.ctfassets.net/gm98wzqotmnx/3Nn6D7zVqrdIsGjufgpES4/abd12fa6427121f7363758aafc468d9a/Terminalicon2.png?h=250"  # noqa: E501
+    _logo_url = "https://cdn.sanity.io/images/3ugk85nk/production/0b47a017e1b40381de770c17647c49cdf6388d1c-250x250.png"  # noqa: E501
     _documentation_url = "https://prefecthq.github.io/prefect-shell/commands/#prefect_shell.commands.ShellOperation"  # noqa: E501
 
     commands: List[str] = Field(
